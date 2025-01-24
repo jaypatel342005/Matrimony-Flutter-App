@@ -32,53 +32,68 @@ class _Dashboard_ScreenState extends State<Dashboard_Screen> {
           ),
         ),
         centerTitle: true,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: IconButton(
+              icon: const Icon(Icons.search),
+              onPressed: () {
+                // Add your search functionality here
+                print('Search button clicked!');
+              },
+            ),
+          ),
+        ],
       ),
       drawer: const CustomDrawer(), // Use the custom drawer
       body: SafeArea(
         minimum: const EdgeInsets.all(12.0),
-        child: Container(
-          margin: const EdgeInsets.only(top: 100),
-          padding: const EdgeInsets.all(16.0),
-          child: GridView.count(
-            crossAxisCount: 2,
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            children: [
-              buildDashboardButton(
-                index: 0,
-                icon: Icons.person_add_alt_1,
-                label: 'Add Profile',
-                color: Colors.blue,
-                isDarkMode: isDarkMode,
-                onPressed: () => print('Add Profile clicked!'),
-              ),
-              buildDashboardButton(
-                index: 1,
-                icon: Icons.list_alt,
-                label: 'Profile List',
-                color: Colors.orange,
-                isDarkMode: isDarkMode,
-                onPressed: () => print('Profile List clicked!'),
-              ),
-              buildDashboardButton(
-                index: 2,
-                icon: Icons.info_outline,
-                label: 'About Us',
-                color: Colors.purple,
-                isDarkMode: isDarkMode,
-                onPressed: () => print('About Us clicked!'),
-              ),
-              buildDashboardButton(
-                index: 3,
-                icon: Icons.favorite,
-                label: 'Favorites',
-                color: Colors.red,
-                isDarkMode: isDarkMode,
-                onPressed: () => print('Favorites clicked!'),
-              ),
-            ],
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(), // Add the bouncing effect
+          child: Container(
+            margin: const EdgeInsets.only(top: 100),
+            padding: const EdgeInsets.all(16.0),
+            child: GridView.count(
+              crossAxisCount: 2,
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 16,
+              shrinkWrap: true,
+              physics: const BouncingScrollPhysics(), // Add bouncing effect for GridView
+              children: [
+                buildDashboardButton(
+                  index: 0,
+                  icon: Icons.person_add_alt_1,
+                  label: 'Add Profile',
+                  color: Colors.blue,
+                  isDarkMode: isDarkMode,
+                  onPressed: () => print('Add Profile clicked!'),
+                ),
+                buildDashboardButton(
+                  index: 1,
+                  icon: Icons.list_alt,
+                  label: 'Profile List',
+                  color: Colors.orange,
+                  isDarkMode: isDarkMode,
+                  onPressed: () => print('Profile List clicked!'),
+                ),
+                buildDashboardButton(
+                  index: 2,
+                  icon: Icons.info_outline,
+                  label: 'About Us',
+                  color: Colors.purple,
+                  isDarkMode: isDarkMode,
+                  onPressed: () => print('About Us clicked!'),
+                ),
+                buildDashboardButton(
+                  index: 3,
+                  icon: Icons.favorite,
+                  label: 'Favorites',
+                  color: Colors.red,
+                  isDarkMode: isDarkMode,
+                  onPressed: () => print('Favorites clicked!'),
+                ),
+              ],
+            ),
           ),
         ),
       ),

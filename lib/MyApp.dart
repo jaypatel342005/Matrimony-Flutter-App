@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:matrimony_flutter_app/MainScreen.dart';
 import 'package:matrimony_flutter_app/utils/theme/custom_themes/theme_notifier.dart';
 import 'package:matrimony_flutter_app/utils/theme/theme.dart';
 import 'package:provider/provider.dart';
@@ -23,7 +24,7 @@ class MyApp extends StatelessWidget {
       themeMode: themeNotifier.getThemeMode,
       theme: TAppTheme.lightTheme,
       darkTheme: TAppTheme.darkTheme,
-      home: const Dashboard_Screen(),
+      home: const Mainscreen(),
       debugShowCheckedModeBanner: false,
     );
   }
