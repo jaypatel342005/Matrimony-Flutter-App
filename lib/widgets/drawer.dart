@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:matrimony_flutter_app/utils/theme/custom_themes/theme_notifier.dart';
+import 'package:matrimony_flutter_app/widgets/navigation_controller.dart';
 import 'package:provider/provider.dart';
 
 class CustomDrawer extends StatefulWidget {
@@ -12,6 +13,7 @@ class CustomDrawer extends StatefulWidget {
 class _CustomDrawerState extends State<CustomDrawer> {
   @override
   Widget build(BuildContext context) {
+    final navigationController = Provider.of<NavigationController>(context);
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     ThemeMode themeMode = themeNotifier.getThemeMode;
 
@@ -53,35 +55,33 @@ class _CustomDrawerState extends State<CustomDrawer> {
                   end: Alignment.bottomRight,
                 ),
               ),
-              child: Container(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Material(
-                      borderRadius: BorderRadius.all(Radius.circular(50)),
-                      elevation: 10,
-                      child: Padding(
-                        padding: const EdgeInsets.all(0),
-                        child: Image.asset(
-                          'assets/images/profile_photo.png',
-                          height: 85,
-                          width: 85,
-                        ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Material(
+                    borderRadius: const BorderRadius.all(Radius.circular(50)),
+                    elevation: 10,
+                    child: Padding(
+                      padding: const EdgeInsets.all(0),
+                      child: Image.asset(
+                        'assets/images/profile_photo.png',
+                        height: 85,
+                        width: 85,
                       ),
                     ),
-                    const Padding(
-                      padding: EdgeInsets.only(top: 8),
-                      child: Text(
-                        'Welcome !',
-                        style: TextStyle(
-                          fontSize: 25,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white, // Matches the header background
-                        ),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.only(top: 8),
+                    child: Text(
+                      'Welcome !',
+                      style: TextStyle(
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white, // Matches the header background
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
             buildDrawerItem(
@@ -89,35 +89,47 @@ class _CustomDrawerState extends State<CustomDrawer> {
               icon: Icons.dashboard,
               label: 'Dashboard',
               color: Colors.blue,
-              onTap: () => print('Dashboard clicked!'),
+              onTap: () {
+                navigationController.setIndex(0); // Navigate to Dashboard
+              },
             ),
             buildDrawerItem(
               context,
               icon: Icons.person_add_alt_1,
               label: 'Add Profile',
               color: Colors.green,
-              onTap: () => print('Add Profile clicked!'),
+              onTap: () {
+                navigationController.setIndex(2); // Navigate to Add Profile
+              },
             ),
             buildDrawerItem(
               context,
               icon: Icons.list_alt,
               label: 'Profile List',
               color: Colors.orange,
-              onTap: () => print('Profile List clicked!'),
+              onTap: () {
+                navigationController.setIndex(1); // Navigate to Profile List
+              },
             ),
             buildDrawerItem(
               context,
               icon: Icons.favorite,
               label: 'Favorites',
               color: Colors.red,
-              onTap: () => print('Favorites clicked!'),
+              onTap: () {
+                // Handle navigation to Favorites if implemented
+                print('lll');
+                // Navigator.pop(context); // Close drawer
+              },
             ),
             buildDrawerItem(
               context,
               icon: Icons.info_outline,
               label: 'About Us',
               color: Colors.purple,
-              onTap: () => print('About Us clicked!'),
+              onTap: () {
+                navigationController.setIndex(3); // Navigate to About Us
+              },
             ),
             const Divider(),
             ListTile(
@@ -160,8 +172,8 @@ class _CustomDrawerState extends State<CustomDrawer> {
       }) {
     return InkWell(
       onTap: () {
-        Navigator.pop(context);
-        onTap();
+        Navigator.pop(context); // Close the drawer
+        onTap(); // Call the provided callback
       },
       splashColor: color.withOpacity(0.3),
       highlightColor: color.withOpacity(0.1),

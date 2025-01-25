@@ -3,7 +3,8 @@ import 'package:matrimony_flutter_app/MainScreen.dart';
 import 'package:matrimony_flutter_app/utils/theme/custom_themes/theme_notifier.dart';
 import 'package:matrimony_flutter_app/utils/theme/theme.dart';
 import 'package:provider/provider.dart';
-import 'Dashboard_Screen.dart';
+import 'widgets/Dashboard_Screen.dart';
+
 // Create this file for theme management
 
 void main() {
@@ -24,7 +25,18 @@ class MyApp extends StatelessWidget {
       themeMode: themeNotifier.getThemeMode,
       theme: TAppTheme.lightTheme,
       darkTheme: TAppTheme.darkTheme,
-      home: const Mainscreen(),
+      home: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.blue, Colors.lightBlueAccent],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ), // Set the background color here
+        child: const SafeArea(
+          child: Mainscreen(),
+        ),
+      ),
       debugShowCheckedModeBanner: false,
     );
   }

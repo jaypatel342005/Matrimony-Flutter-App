@@ -1,99 +1,73 @@
 import 'package:flutter/material.dart';
-import 'drawer_widget.dart'; // Import the CustomDrawer file
+import 'package:matrimony_flutter_app/widgets/navigation_controller.dart';
+import 'package:provider/provider.dart';
+import 'drawer.dart'; // Import the CustomDrawer file
+import 'app_bar.dart'; // Import the CustomAppBar file
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
-class Dashboard_Screen extends StatefulWidget {
-  const Dashboard_Screen({super.key});
+class Dashboard extends StatefulWidget {
+  const Dashboard({super.key});
 
   @override
-  State<Dashboard_Screen> createState() => _Dashboard_ScreenState();
+  State<Dashboard> createState() => _DashboardState();
 }
 
-class _Dashboard_ScreenState extends State<Dashboard_Screen> {
+class _DashboardState extends State<Dashboard> {
   int _hoveredIndex = -1;
 
   @override
   Widget build(BuildContext context) {
+    final navigationController = Provider.of<NavigationController>(context);
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Matrimony Dashboard',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.blue, Colors.lightBlueAccent],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-        ),
-        centerTitle: true,
-        actions: [
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: IconButton(
-              icon: const Icon(Icons.search),
-              onPressed: () {
-                // Add your search functionality here
-                print('Search button clicked!');
-              },
-            ),
-          ),
-        ],
-      ),
+      appBar: const CustomAppBar(), // Use the CustomAppBar here
       drawer: const CustomDrawer(), // Use the custom drawer
-      body: SafeArea(
-        minimum: const EdgeInsets.all(12.0),
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(), // Add the bouncing effect
-          child: Container(
-            margin: const EdgeInsets.only(top: 100),
-            padding: const EdgeInsets.all(16.0),
-            child: GridView.count(
-              crossAxisCount: 2,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
-              shrinkWrap: true,
-              physics: const BouncingScrollPhysics(), // Add bouncing effect for GridView
-              children: [
-                buildDashboardButton(
-                  index: 0,
-                  icon: Icons.person_add_alt_1,
-                  label: 'Add Profile',
-                  color: Colors.blue,
-                  isDarkMode: isDarkMode,
-                  onPressed: () => print('Add Profile clicked!'),
-                ),
-                buildDashboardButton(
-                  index: 1,
-                  icon: Icons.list_alt,
-                  label: 'Profile List',
-                  color: Colors.orange,
-                  isDarkMode: isDarkMode,
-                  onPressed: () => print('Profile List clicked!'),
-                ),
-                buildDashboardButton(
-                  index: 2,
-                  icon: Icons.info_outline,
-                  label: 'About Us',
-                  color: Colors.purple,
-                  isDarkMode: isDarkMode,
-                  onPressed: () => print('About Us clicked!'),
-                ),
-                buildDashboardButton(
-                  index: 3,
-                  icon: Icons.favorite,
-                  label: 'Favorites',
-                  color: Colors.red,
-                  isDarkMode: isDarkMode,
-                  onPressed: () => print('Favorites clicked!'),
-                ),
-              ],
-            ),
+      body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(), // Add the bouncing effect
+        child: Container(
+          margin: const EdgeInsets.only(top: 100),
+          padding: const EdgeInsets.all(16.0),
+          child: GridView.count(
+            crossAxisCount: 2,
+            crossAxisSpacing: 16,
+            mainAxisSpacing: 16,
+            shrinkWrap: true,
+            physics: const BouncingScrollPhysics(), // Add bouncing effect for GridView
+            children: [
+              buildDashboardButton(
+                index: 0,
+                icon: Icons.person_add_alt_1,
+                label: 'Add Profile',
+                color: Colors.blue,
+                isDarkMode: isDarkMode,
+                onPressed: () => _delayedNavigation(navigationController, 2),
+              ),
+              buildDashboardButton(
+                index: 1,
+                icon: Icons.list_alt,
+                label: 'Profile List',
+                color: Colors.orange,
+                isDarkMode: isDarkMode,
+                onPressed: () => _delayedNavigation(navigationController, 1),
+              ),
+              buildDashboardButton(
+                index: 2,
+                icon: Icons.info_outline,
+                label: 'About Us',
+                color: Colors.purple,
+                isDarkMode: isDarkMode,
+                onPressed: () => _delayedNavigation(navigationController, 3),
+              ),
+              buildDashboardButton(
+                index: 3,
+                icon: Icons.favorite,
+                label: 'Favorites',
+                color: Colors.red,
+                isDarkMode: isDarkMode,
+                onPressed: () => print('Favorites clicked!'),
+              ),
+            ],
           ),
         ),
       ),
@@ -110,13 +84,13 @@ class _Dashboard_ScreenState extends State<Dashboard_Screen> {
             child: const Icon(Icons.person_add_alt_1, color: Colors.white),
             backgroundColor: Colors.blue,
             label: 'Add Profile',
-            onTap: () => print('Add Profile selected'),
+            onTap: () => _delayedNavigation(navigationController, 2),
           ),
           SpeedDialChild(
             child: const Icon(Icons.list_alt, color: Colors.white),
             backgroundColor: Colors.orange,
             label: 'Profile List',
-            onTap: () => print('Profile List selected'),
+            onTap: () => _delayedNavigation(navigationController, 1),
           ),
           SpeedDialChild(
             child: const Icon(Icons.favorite, color: Colors.white),
@@ -128,11 +102,18 @@ class _Dashboard_ScreenState extends State<Dashboard_Screen> {
             child: const Icon(Icons.info_outline, color: Colors.white),
             backgroundColor: Colors.purple,
             label: 'About Us',
-            onTap: () => print('About Us selected'),
+            onTap: () => _delayedNavigation(navigationController, 3),
           ),
         ],
       ),
     );
+  }
+
+  // Function to delay navigation
+  void _delayedNavigation(NavigationController navigationController, int index) {
+    Future.delayed(const Duration(milliseconds: 180), () {
+      navigationController.setIndex(index); // Delay before navigation happens
+    });
   }
 
   Widget buildDashboardButton({

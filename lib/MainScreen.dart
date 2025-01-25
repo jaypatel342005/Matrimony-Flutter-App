@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:matrimony_flutter_app/bottom_nav_bar.dart';
-import 'package:matrimony_flutter_app/custom_app_bar.dart';
+import 'package:matrimony_flutter_app/widgets/bottom_nav_bar.dart';
 
 class Mainscreen extends StatefulWidget {
   const Mainscreen({super.key});
@@ -12,9 +11,18 @@ class Mainscreen extends StatefulWidget {
 class _MainscreenState extends State<Mainscreen> {
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
+    final appBarColor = Theme.of(context).appBarTheme.backgroundColor ?? Theme.of(context).primaryColor;
+
+    return Container(
+      color: appBarColor, // Match SafeArea color to AppBar color
       child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Main Screen'),
+        ),
         bottomNavigationBar: BottomNavigationBarWidget(),
+        body: const Center(
+          child: Text('Main content here'),
+        ),
       ),
     );
   }
