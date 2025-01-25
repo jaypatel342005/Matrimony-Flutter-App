@@ -1,13 +1,8 @@
 import 'package:flutter/material.dart';
 
-class CustomAppBar extends StatefulWidget {
+class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({super.key});
 
-  @override
-  State<CustomAppBar> createState() => _CustomAppBarState();
-}
-
-class _CustomAppBarState extends State<CustomAppBar> {
   @override
   Widget build(BuildContext context) {
     return AppBar(
@@ -26,17 +21,17 @@ class _CustomAppBarState extends State<CustomAppBar> {
       ),
       centerTitle: true,
       actions: [
-        Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {
-              // Add your search functionality here
-              print('Search button clicked!');
-            },
-          ),
+        IconButton(
+          icon: const Icon(Icons.search),
+          onPressed: () {
+            // Add your search functionality here
+            print('Search button clicked!');
+          },
         ),
       ],
     );
   }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
