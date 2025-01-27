@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:matrimony_flutter_app/utils/theme/custom_themes/theme_notifier.dart';
-import 'package:matrimony_flutter_app/widgets/navigation_controller.dart';
-import 'package:provider/provider.dart';
-
+import 'export.dart';
 class CustomDrawer extends StatefulWidget {
   const CustomDrawer({Key? key}) : super(key: key);
 

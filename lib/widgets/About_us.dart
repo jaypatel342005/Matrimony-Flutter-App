@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:matrimony_flutter_app/widgets/app_bar.dart';
-import 'package:matrimony_flutter_app/widgets/drawer.dart';
+import 'export.dart';
 
 class AboutUs extends StatefulWidget {
   const AboutUs({super.key});

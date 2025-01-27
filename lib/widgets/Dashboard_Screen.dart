@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:matrimony_flutter_app/widgets/navigation_controller.dart';
-import 'package:provider/provider.dart';
-import 'drawer.dart'; // Import the CustomDrawer file
-import 'app_bar.dart'; // Import the CustomAppBar file
-import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'export.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -21,10 +17,10 @@ class _DashboardState extends State<Dashboard> {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      appBar: const CustomAppBar(), // Use the CustomAppBar here
-      drawer: const CustomDrawer(), // Use the custom drawer
+      appBar: const CustomAppBar(),
+      drawer: const CustomDrawer(),
       body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(), // Add the bouncing effect
+        physics: const BouncingScrollPhysics(),
         child: Container(
           margin: const EdgeInsets.only(top: 100),
           padding: const EdgeInsets.all(16.0),
@@ -33,7 +29,7 @@ class _DashboardState extends State<Dashboard> {
             crossAxisSpacing: 16,
             mainAxisSpacing: 16,
             shrinkWrap: true,
-            physics: const BouncingScrollPhysics(), // Add bouncing effect for GridView
+            physics: const BouncingScrollPhysics(),
             children: [
               buildDashboardButton(
                 index: 0,
@@ -109,10 +105,10 @@ class _DashboardState extends State<Dashboard> {
     );
   }
 
-  // Function to delay navigation
+
   void _delayedNavigation(NavigationController navigationController, int index) {
-    Future.delayed(const Duration(milliseconds: 180), () {
-      navigationController.setIndex(index); // Delay before navigation happens
+    Future.delayed(const Duration(milliseconds: 160), () {
+      navigationController.setIndex(index);
     });
   }
 

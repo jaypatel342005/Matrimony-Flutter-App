@@ -1,11 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-import 'package:matrimony_flutter_app/widgets/About_us.dart';
-import 'package:matrimony_flutter_app/widgets/Add_Profile.dart';
-import 'package:matrimony_flutter_app/widgets/Profile_List.dart';
-import 'package:provider/provider.dart'; // For state management
-import 'navigation_controller.dart'; // Import the controller
-import 'Dashboard_Screen.dart';
+import 'export.dart';
 
 class BottomNavigationBarWidget extends StatelessWidget {
   const BottomNavigationBarWidget({super.key});
@@ -42,7 +36,7 @@ class BottomNavigationBarWidget extends StatelessWidget {
         buttonBackgroundColor: bgColor,
         backgroundColor: isDarkTheme ? Colors.black54 : Colors.blueAccent,
         animationCurve: Curves.easeInOut,
-        animationDuration: const Duration(milliseconds: 600),
+        animationDuration: const Duration(milliseconds: 500),
         onTap: navigationController.setIndex,
       ),
     );
