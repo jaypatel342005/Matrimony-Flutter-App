@@ -1,277 +1,293 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'Users.dart'; // Import the global file
+import 'package:matrimony_flutter_app/widgets/userdata.dart';
+
+import 'Add_Profile.dart';
+import 'detailed_user.dart';
 import 'export.dart';
 
-class ProfileList extends StatefulWidget {
+final User myUser = User.instance;
+dynamic users = myUser.getUserList();
+
+class UserListPage extends StatefulWidget {
+  const UserListPage({Key? key}) : super(key: key);
+
   @override
-  _ProfileListState createState() => _ProfileListState();
+  State<UserListPage> createState() => _UserListPageState();
 }
 
-class _ProfileListState extends State<ProfileList> {
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController ageController = TextEditingController();
-  final TextEditingController cityController = TextEditingController();
-  final TextEditingController phoneController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
+class _UserListPageState extends State<UserListPage> {
+  final TextEditingController searchController = TextEditingController();
 
-  void _addOrUpdateUser({int? index}) {
-    nameController.text = index != null ? users[index]['name'] : '';
-    ageController.text = index != null ? users[index]['age'].toString() : '';
-    cityController.text = index != null ? users[index]['city'] : '';
-    phoneController.text = index != null ? users[index]['phone'] : '';
-    emailController.text = index != null ? users[index]['email'] : '';
+  @override
+  void initState() {
+    super.initState();
+    users = myUser.getUserList();
+    searchController.addListener(() {
+      setState(() {});
+    });
+  }
 
-    showDialog(
+  @override
+  void dispose() {
+    searchController.dispose(); // Dispose the controller to avoid memory leaks
+    super.dispose();
+  }
+
+  // Show Cupertino-style dialog for confirmation before deletion
+  Future<void> _showDeleteConfirmationDialog(int index) async {
+    showCupertinoDialog(
       context: context,
-      builder: (context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          title: Text(
-            index == null ? 'Add User' : 'Update User',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          content: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Column(
-                children: [
-                  _buildTextField('Name', nameController),
-                  SizedBox(height: 10),
-                  _buildTextField('Age', ageController, TextInputType.number),
-                  SizedBox(height: 10),
-                  _buildTextField('City', cityController),
-                  SizedBox(height: 10),
-                  _buildTextField('Phone', phoneController, TextInputType.phone),
-                  SizedBox(height: 10),
-                  _buildTextField(
-                      'Email', emailController, TextInputType.emailAddress),
-                ],
-              ),
+      builder: (BuildContext context) {
+        return CupertinoAlertDialog(
+          title: const Text('Delete User'),
+          content: const Text('Are you sure you want to delete this user?'),
+          actions: <Widget>[
+            CupertinoDialogAction(
+              child: const Text('Cancel', style: TextStyle(color: Colors.green)),
+              onPressed: () {
+                Navigator.pop(context); // Close the dialog
+              },
             ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
+            CupertinoDialogAction(
               child: const Text(
-                'Cancel',
+                'Delete',
                 style: TextStyle(color: Colors.red),
               ),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
               onPressed: () {
                 setState(() {
-                  if (index == null) {
-                    users.add({
-                      'name': nameController.text,
-                      'age': int.parse(ageController.text),
-                      'city': cityController.text,
-                      'phone': phoneController.text,
-                      'email': emailController.text,
-                    });
-                  } else {
-                    users[index] = {
-                      'name': nameController.text,
-                      'age': int.parse(ageController.text),
-                      'city': cityController.text,
-                      'phone': phoneController.text,
-                      'email': emailController.text,
-                    };
-                  }
+                  myUser.deleteUser(index); // Delete the user
                 });
-                Navigator.pop(context);
+                Navigator.pop(context); // Close the dialog
               },
-              child: Text(index == null ? 'Add' : 'Update'),
             ),
           ],
         );
       },
-    );
-  }
-
-  void _deleteUser(int index) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          title: const Text(
-            'Delete User',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          content: const Text('Are you sure you want to delete this user?'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text(
-                'Cancel',
-                style: TextStyle(color: Colors.grey),
-              ),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              onPressed: () {
-                setState(() {
-                  users.removeAt(index);
-                });
-                Navigator.pop(context);
-              },
-              child: const Text('Delete'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _buildTextField(String label, TextEditingController controller,
-      [TextInputType keyboardType = TextInputType.text]) {
-    return TextField(
-      controller: controller,
-      keyboardType: keyboardType,
-      decoration: InputDecoration(
-        labelText: label,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final cardBackground = Theme.of(context).brightness == Brightness.dark
+        ? Colors.grey[850]
+        : Colors.white;
+
     return Scaffold(
       appBar: const CustomAppBar(),
       drawer: const CustomDrawer(),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ListView.builder(
-          itemCount: users.length,
-          itemBuilder: (context, index) {
-            final user = users[index];
-            return Card(
-              margin: const EdgeInsets.symmetric(vertical: 8),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        CircleAvatar(
-                          backgroundColor: Colors.blue,
-                          child: Icon(Icons.person, color: Colors.white),
-                        ),
-                        const SizedBox(width: 12),
-                        Text(
-                          '${user['name']} (Age: ${user['age']})',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'City: ',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                          ),
-                        ),
-                        Expanded(
-                          child: Text(
-                            user['city'],
-                            style: const TextStyle(fontSize: 14),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Phone: ',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                          ),
-                        ),
-                        Expanded(
-                          child: Text(
-                            user['phone'],
-                            style: const TextStyle(fontSize: 14),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Email: ',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                          ),
-                        ),
-                        Expanded(
-                          child: Text(
-                            user['email'],
-                            style: const TextStyle(fontSize: 14),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.edit, color: Colors.green),
-                          onPressed: () => _addOrUpdateUser(index: index),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.red),
-                          onPressed: () => _deleteUser(index),
-                        ),
-                      ],
-                    ),
-                  ],
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: TextField(
+              controller: searchController,
+              decoration: InputDecoration(
+                hintText: 'Search users...',
+                prefixIcon: const Icon(Icons.search),
+                contentPadding:
+                const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(25),
                 ),
+                suffixIcon: searchController.text.isNotEmpty
+                    ? IconButton(
+                  icon: const Icon(Icons.cancel_outlined),
+                  onPressed: () {
+                    setState(() {
+                      searchController.clear();
+                      users = myUser.getUserList();
+                    });
+                  },
+                )
+                    : null,
               ),
-            );
-          },
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.blue,
-        onPressed: () => _addOrUpdateUser(),
-        child: const Icon(Icons.add, color: Colors.white),
+              onChanged: (value) {
+                setState(() {
+                  users = myUser.searchDeatail(searchData: value);
+                });
+              },
+            ),
+          ),
+          const SizedBox(height: 10),
+          Expanded(
+            child: myUser.getUserList().isEmpty
+                ? const Center(
+              child: Text(
+                "No users added yet!",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            )
+                : searchController.text.isNotEmpty && users.isEmpty
+                ? const Center(
+              child: Text(
+                "Users not found!",
+                style: TextStyle(
+                    fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            )
+                : ListView.builder(
+              itemCount: users.length,
+              itemBuilder: (context, index) {
+                final user = users[index];
+                return Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 12.0, vertical: 6.0),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              DetailedUser(index: index),
+                        ),
+                      );
+                    },
+                    child: Card(
+                      color: cardBackground,
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Avatar on the left
+                            CircleAvatar(
+                              radius: 20,
+                              backgroundColor:
+                              Colors.deepOrangeAccent,
+                              child: Text(
+                                user['firstName'][0].toUpperCase(),
+                                style: const TextStyle(
+                                    fontSize: 24,
+                                    color: Colors.white),
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            // User details
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment:
+                                CrossAxisAlignment.start,
+                                children: [
+                                  // Name with ellipsis for long text
+                                  Text(
+                                    "${user['firstName']} ${user['lastName']}",
+                                    style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  // Light line (Divider)
+                                  Divider(
+                                    color: Colors.grey[300], // Light color for the divider line
+                                    thickness: 1, // Thickness of the line
+                                  ),
+                                  const SizedBox(height: 8),
+                                  // City
+                                  Row(
+                                    children: [
+                                      const Icon(Icons.location_on,
+                                          size: 16,
+                                          color: Colors.green),
+                                      const SizedBox(width: 4),
+                                      Text("${user['city']}"),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 4),
+                                  // Email
+                                  Row(
+                                    children: [
+                                      const Icon(Icons.email,
+                                          size: 16,
+                                          color: Colors.blue),
+                                      const SizedBox(width: 4),
+                                      Flexible(
+                                        child: Text(
+                                          "${user['email']}",
+                                          overflow:
+                                          TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 4),
+                                  // Phone
+                                  Row(
+                                    children: [
+                                      const Icon(Icons.phone,
+                                          size: 16,
+                                          color: Colors.purple),
+                                      const SizedBox(width: 4),
+                                      Text("${user['number']}"),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            // Icons on the right
+                            Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: const Icon(Icons.edit,
+                                      color: Colors.blue),
+                                  onPressed: () async {
+                                    final result =
+                                    await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            AddUserForm(
+                                                userData: user,
+                                                index: index),
+                                      ),
+                                    );
+                                    if (result == true) {
+                                      setState(() {
+                                        users =
+                                            myUser.getUserList();
+                                      });
+                                    }
+                                  },
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.delete,
+                                      color: Colors.red),
+                                  onPressed: () {
+                                    _showDeleteConfirmationDialog(
+                                        index);
+                                  },
+                                ),
+                                IconButton(
+                                  icon: Icon(Icons.favorite,
+                                      color: user['isLiked']
+                                          ? Colors.red
+                                          : Colors.grey),
+                                  onPressed: () {
+                                    setState(() {
+                                      user['isLiked'] =
+                                      !user['isLiked'];
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart'; // Import Provider
+import 'favoritepage.dart';
+import 'userdata.dart';
 import 'export.dart';
+
 class CustomDrawer extends StatefulWidget {
   const CustomDrawer({Key? key}) : super(key: key);
 
@@ -10,7 +14,6 @@ class CustomDrawer extends StatefulWidget {
 class _CustomDrawerState extends State<CustomDrawer> {
   @override
   Widget build(BuildContext context) {
-    final navigationController = Provider.of<NavigationController>(context);
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     ThemeMode themeMode = themeNotifier.getThemeMode;
 
@@ -87,7 +90,12 @@ class _CustomDrawerState extends State<CustomDrawer> {
               label: 'Dashboard',
               color: Colors.blue,
               onTap: () {
-                navigationController.setIndex(0); // Navigate to Dashboard
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Dashboard()
+                  ),
+                );
               },
             ),
             buildDrawerItem(
@@ -96,7 +104,13 @@ class _CustomDrawerState extends State<CustomDrawer> {
               label: 'Add Profile',
               color: Colors.green,
               onTap: () {
-                navigationController.setIndex(2); // Navigate to Add Profile
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddUserForm(),
+                  ),
+                );
               },
             ),
             buildDrawerItem(
@@ -105,7 +119,13 @@ class _CustomDrawerState extends State<CustomDrawer> {
               label: 'Profile List',
               color: Colors.orange,
               onTap: () {
-                navigationController.setIndex(1); // Navigate to Profile List
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => UserListPage(),
+                  ),
+                );
               },
             ),
             buildDrawerItem(
@@ -114,9 +134,10 @@ class _CustomDrawerState extends State<CustomDrawer> {
               label: 'Favorites',
               color: Colors.red,
               onTap: () {
-                // Handle navigation to Favorites if implemented
-                print('lll');
-                // Navigator.pop(context); // Close drawer
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => FavoritesPage()),
+                );
               },
             ),
             buildDrawerItem(
@@ -125,7 +146,10 @@ class _CustomDrawerState extends State<CustomDrawer> {
               label: 'About Us',
               color: Colors.purple,
               onTap: () {
-                navigationController.setIndex(3); // Navigate to About Us
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AboutUsPage()),
+                );
               },
             ),
             const Divider(),

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:matrimony_flutter_app/widgets/favoritepage.dart';
+import 'userdata.dart';
 import 'export.dart';
 
 class Dashboard extends StatefulWidget {
@@ -13,7 +15,6 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
-    final navigationController = Provider.of<NavigationController>(context);
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
@@ -37,7 +38,12 @@ class _DashboardState extends State<Dashboard> {
                 label: 'Add Profile',
                 color: Colors.blue,
                 isDarkMode: isDarkMode,
-                onPressed: () => _delayedNavigation(navigationController, 2),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                      MaterialPageRoute(builder: (context) => AddUserForm()),
+                  );
+                },
               ),
               buildDashboardButton(
                 index: 1,
@@ -45,7 +51,12 @@ class _DashboardState extends State<Dashboard> {
                 label: 'Profile List',
                 color: Colors.orange,
                 isDarkMode: isDarkMode,
-                onPressed: () => _delayedNavigation(navigationController, 1),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                      MaterialPageRoute(builder: (context) => UserListPage()),
+                  );
+                },
               ),
               buildDashboardButton(
                 index: 2,
@@ -53,7 +64,12 @@ class _DashboardState extends State<Dashboard> {
                 label: 'About Us',
                 color: Colors.purple,
                 isDarkMode: isDarkMode,
-                onPressed: () => _delayedNavigation(navigationController, 3),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => AboutUsPage()),
+                  );
+                },
               ),
               buildDashboardButton(
                 index: 3,
@@ -61,7 +77,12 @@ class _DashboardState extends State<Dashboard> {
                 label: 'Favorites',
                 color: Colors.red,
                 isDarkMode: isDarkMode,
-                onPressed: () => print('Favorites clicked!'),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => FavoritesPage()),
+                  );
+                },
               ),
             ],
           ),
@@ -80,13 +101,23 @@ class _DashboardState extends State<Dashboard> {
             child: const Icon(Icons.person_add_alt_1, color: Colors.white),
             backgroundColor: Colors.blue,
             label: 'Add Profile',
-            onTap: () => _delayedNavigation(navigationController, 2),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AddUserForm()),
+              );
+            },
           ),
           SpeedDialChild(
             child: const Icon(Icons.list_alt, color: Colors.white),
             backgroundColor: Colors.orange,
             label: 'Profile List',
-            onTap: () => _delayedNavigation(navigationController, 1),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => UserListPage()),
+              );
+            },
           ),
           SpeedDialChild(
             child: const Icon(Icons.favorite, color: Colors.white),
@@ -98,18 +129,16 @@ class _DashboardState extends State<Dashboard> {
             child: const Icon(Icons.info_outline, color: Colors.white),
             backgroundColor: Colors.purple,
             label: 'About Us',
-            onTap: () => _delayedNavigation(navigationController, 3),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AboutUsPage()),
+              );
+            },
           ),
         ],
       ),
     );
-  }
-
-
-  void _delayedNavigation(NavigationController navigationController, int index) {
-    Future.delayed(const Duration(milliseconds: 160), () {
-      navigationController.setIndex(index);
-    });
   }
 
   Widget buildDashboardButton({
@@ -155,7 +184,9 @@ class _DashboardState extends State<Dashboard> {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                color: isDarkMode ? (isHovered ? color : Colors.white) : (isHovered ? color : Colors.black),
+                color: isDarkMode
+                    ? (isHovered ? color : Colors.white)
+                    : (isHovered ? color : Colors.black),
               ),
             ),
           ],

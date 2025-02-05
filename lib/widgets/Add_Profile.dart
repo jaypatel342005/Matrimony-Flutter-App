@@ -1,198 +1,445 @@
 import 'package:flutter/material.dart';
-import 'Users.dart';
-import 'export.dart'; // Import the global file
+import 'package:intl/intl.dart';
+import 'Profile_List.dart';
+import 'export.dart';
+import 'userdata.dart';
 
-class AddProfile extends StatefulWidget {
-  const AddProfile({super.key});
+class AddUserForm extends StatefulWidget {
+  final Map<String, dynamic>? userData;
+  final int? index;
+
+  const AddUserForm({Key? key, this.userData, this.index}) : super(key: key);
 
   @override
-  State<AddProfile> createState() => _AddProfileState();
+  State<AddUserForm> createState() => _AddUserFormState();
 }
 
-class _AddProfileState extends State<AddProfile> {
-  final _formKey = GlobalKey<FormState>();
+class _AddUserFormState extends State<AddUserForm> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController firstNameController = TextEditingController();
+  final TextEditingController lastNameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController mobileController = TextEditingController();
+  final TextEditingController dobController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
 
-  String? name;
-  String? address;
-  String? email;
-  String? mobile;
-  String city = 'Rajkot';
-  String gender = 'Male';
-  DateTime? dob;
+  final List<String> cities = [
+    'Ahmedabad',
+    'Surat',
+    'Rajkot',
+    'Morbi',
+    'Jamnagar'
+  ];
+  String selectedCity = 'Ahmedabad';
+  int? selectedGender;
+  List<String> selectedHobbies = [];
+  final Map<String, bool> hobbies = {
+    'Reading': false,
+    'Traveling': false,
+    'Gaming': false,
+    'Cooking': false,
+  };
 
-  void _saveForm() {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-
-      // Add a new user to the global list
-      setState(() {
-        users.add({
-          'name': name,
-          'address': address,
-          'email': email,
-          'phone': mobile,
-          'city': city,
-          'gender': gender,
-          'dob': dob?.toLocal().toString().split(' ')[0],
-        });
+  @override
+  void initState() {
+    super.initState();
+    if (widget.userData != null) {
+      firstNameController.text = widget.userData!['firstName'] ?? '';
+      lastNameController.text = widget.userData!['lastName'] ?? '';
+      emailController.text = widget.userData!['email'] ?? '';
+      mobileController.text = widget.userData!['number'] ?? '';
+      dobController.text = widget.userData!['dob'] ?? '';
+      selectedCity = widget.userData!['city'] ?? cities[0];
+      selectedGender = widget.userData!['gender'];
+      selectedHobbies = List<String>.from(widget.userData!['hobbies'] ?? []);
+      hobbies.forEach((key, _) {
+        hobbies[key] = selectedHobbies.contains(key);
       });
-
-      // Debugging: Print the updated global list
-      for (var user in users) {
-        print(user);
-      }
+      passwordController.text = widget.userData!['password'] ?? '';
+      confirmPasswordController.text =
+          widget.userData!['confirmPassword'] ?? '';
     }
   }
 
-  void _resetForm() {
-    _formKey.currentState!.reset();
-    setState(() {
-      dob = null;
-    });
+  bool isDisposableEmail(String email) {
+    const disposableEmailProviders = [
+      'hotmail.com',
+      'outlook.com',
+      'mailinator.com',
+      '10minutemail.com',
+      'temp-mail.org',
+      'dispostable.com',
+    ];
+    String domain = email.split('@').last;
+    return disposableEmailProviders.contains(domain);
   }
+
+  bool isEmailUnique(String value) => true; // Replace with your own logic.
+  bool isMobileUnique(String value) => true; // Replace with your own logic.
 
   @override
   Widget build(BuildContext context) {
-    final navigationController = Provider.of<NavigationController>(context);
+    final cardBackground = Theme.of(context).cardColor;
+    final shadowColor = Theme.of(context).brightness == Brightness.dark
+        ? Colors.black45
+        : Colors.black12;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Add Profile'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Name',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                ),
-                onSaved: (value) => name = value,
-                validator: (value) => value!.isEmpty ? 'Please enter your name' : null,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Address',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                ),
-                onSaved: (value) => address = value,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                ),
-                keyboardType: TextInputType.emailAddress,
-                onSaved: (value) => email = value,
-                validator: (value) => value!.isEmpty ? 'Please enter your email' : null,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Mobile',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                ),
-                keyboardType: TextInputType.phone,
-                onSaved: (value) => mobile = value,
-                validator: (value) => value!.isEmpty ? 'Please enter your mobile number' : null,
-              ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField(
-                value: city,
-                decoration: InputDecoration(
-                  labelText: 'City',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                ),
-                items: ['Rajkot', 'Ahmedabad', 'Surat'].map((String city) {
-                  return DropdownMenuItem(value: city, child: Text(city));
-                }).toList(),
-                onChanged: (value) => setState(() => city = value as String),
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: RadioListTile(
-                      title: const Text('Male'),
-                      value: 'Male',
-                      groupValue: gender,
-                      onChanged: (value) => setState(() => gender = value as String),
-                    ),
-                  ),
-                  Expanded(
-                    child: RadioListTile(
-                      title: const Text('Female'),
-                      value: 'Female',
-                      groupValue: gender,
-                      onChanged: (value) => setState(() => gender = value as String),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Date of Birth',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                ),
-                readOnly: true,
-                onTap: () async {
-                  DateTime? pickedDate = await showDatePicker(
-                    context: context,
-                    initialDate: DateTime.now(),
-                    firstDate: DateTime(1900),
-                    lastDate: DateTime.now(),
-                  );
-                  if (pickedDate != null) {
-                    setState(() => dob = pickedDate);
-                  }
-                },
-                validator: (value) => dob == null ? 'Please select your date of birth' : null,
-                controller: TextEditingController(
-                  text: dob != null ? dob!.toLocal().toString().split(' ')[0] : '',
-                ),
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          _saveForm();
-                          navigationController.setIndex(1); // Navigate to Profile List
-                        }
-                      },
-                      child: const Text('Save'),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: _resetForm,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
-                      ),
-                      child: const Text('Reset'),
-                    ),
-                  ),
-                ],
-              ),
+      appBar: const CustomAppBar(),
+      drawer: const CustomDrawer(),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: cardBackground,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                  color: shadowColor, blurRadius: 8, offset: const Offset(0, 4))
             ],
+          ),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                Text(
+                  widget.userData == null ? "Add New User" : "Update User",
+                  style: Theme.of(context)
+                      .textTheme
+                      .headlineSmall
+                      ?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 20),
+                _buildTextField(
+                    firstNameController,
+                    'First Name',
+                    'Enter First Name',
+                    Icons.person_outline,
+                    (value) => _validateName(value, 'first name')),
+                const SizedBox(height: 20),
+                _buildTextField(
+                    lastNameController,
+                    'Last Name',
+                    'Enter Last Name',
+                    Icons.person_outline,
+                    (value) => _validateName(value, 'last name')),
+                const SizedBox(height: 20),
+                _buildTextField(emailController, 'Email', 'Enter Email Address',
+                    Icons.email_outlined, (value) => _validateEmail(value)),
+                const SizedBox(height: 20),
+                _buildMobileField(),
+                const SizedBox(height: 20),
+                _buildDateField(),
+                const SizedBox(height: 20),
+                _buildCityDropdown(),
+                const SizedBox(height: 20),
+                _buildGenderSelection(),
+                const SizedBox(height: 20),
+                _buildHobbiesSelection(),
+                const SizedBox(height: 20),
+                _buildTextField(
+                    passwordController,
+                    'Password',
+                    'Enter Password',
+                    Icons.lock_outline,
+                    (value) => _validatePassword(value)),
+                const SizedBox(height: 20),
+                _buildTextField(
+                    confirmPasswordController,
+                    'Confirm Password',
+                    'Re-enter Password',
+                    Icons.lock_outline,
+                    (value) => _validateConfirmPassword(value)),
+                const SizedBox(height: 40),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 15, horizontal: 30),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10))),
+                  onPressed: _onSubmit,
+                  child: Text(
+                      widget.userData == null ? "Add User" : "Update User",
+                      style: const TextStyle(fontSize: 16)),
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
+  }
+
+  TextFormField _buildTextField(TextEditingController controller, String label,
+      String hint, IconData icon, String? Function(String?) validator) {
+    return TextFormField(
+      controller: controller,
+      decoration: InputDecoration(
+          labelText: label,
+          hintText: hint,
+          prefixIcon: Icon(icon),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10))),
+      validator: validator,
+    );
+  }
+
+  TextFormField _buildMobileField() {
+    return TextFormField(
+      controller: mobileController,
+      decoration: InputDecoration(
+          labelText: 'Mobile Number',
+          hintText: 'Enter Mobile Number',
+          prefixIcon: const Icon(Icons.phone_android),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10))),
+      keyboardType: TextInputType.phone,
+      onChanged: (value) {
+        String newValue = value
+            .replaceAll(RegExp(r'[^0-9]'), '')
+            .substring(0, (value.length > 10 ? 10 : value.length));
+        mobileController.value = TextEditingValue(
+            text: newValue,
+            selection: TextSelection.fromPosition(
+                TextPosition(offset: newValue.length)));
+      },
+      validator: (value) {
+        if (value == null || value.isEmpty) return 'Enter mobile number';
+        if (value.length != 10) return 'Mobile number must be 10 digits';
+        return isMobileUnique(value)
+            ? null
+            : 'This mobile number is already registered';
+      },
+    );
+  }
+
+  TextFormField _buildDateField() {
+    return TextFormField(
+      controller: dobController,
+      decoration: InputDecoration(
+          labelText: 'Date of Birth',
+          hintText: 'DD/MM/YYYY',
+          prefixIcon: const Icon(Icons.calendar_today),
+          suffixIcon: IconButton(
+            icon: const Icon(Icons.date_range),
+            onPressed: () async {
+              DateTime now = DateTime.now();
+              DateTime? pickedDate = await showDatePicker(
+                  context: context,
+                  initialDate: now,
+                  firstDate: DateTime(1900),
+                  lastDate: now);
+              if (pickedDate != null) {
+                setState(() {
+                  dobController.text =
+                      DateFormat('dd/MM/yyyy').format(pickedDate);
+                });
+              }
+            },
+          ),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10))),
+      validator: (value) {
+        if (value == null || value.isEmpty) return 'Enter date of birth';
+        if (!RegExp(r'^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/\d{4}$')
+            .hasMatch(value)) return 'Enter DOB in DD/MM/YYYY format';
+        try {
+          DateTime dob = DateFormat('dd/MM/yyyy').parseStrict(value);
+          int age = DateTime.now().year - dob.year;
+          if (age < 18 || age > 80)
+            return 'Age must be between 18 and 80 years';
+        } catch (e) {
+          return 'Invalid date';
+        }
+        return null;
+      },
+    );
+  }
+
+  DropdownButtonFormField<String> _buildCityDropdown() {
+    return DropdownButtonFormField<String>(
+      value: selectedCity,
+      decoration: InputDecoration(
+          labelText: 'City',
+          prefixIcon: const Icon(Icons.location_city),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10))),
+      items: cities
+          .map((city) =>
+              DropdownMenuItem<String>(value: city, child: Text(city)))
+          .toList(),
+      onChanged: (value) {
+        setState(() {
+          selectedCity = value ?? cities[0];
+        });
+      },
+      validator: (value) =>
+          value == null || value.isEmpty ? 'Please select a city' : null,
+    );
+  }
+
+  FormField<int> _buildGenderSelection() {
+    return FormField<int>(
+      initialValue: selectedGender,
+      validator: (value) => value == null ? 'Please select your gender' : null,
+      builder: (FormFieldState<int> state) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text("Gender:", style: TextStyle(fontSize: 16)),
+            Wrap(
+              spacing: 20,
+              runSpacing: 10,
+              children: [
+                _buildGenderRadio(1, 'Male', state),
+                _buildGenderRadio(0, 'Female', state),
+                _buildGenderRadio(2, 'Other', state),
+              ],
+            ),
+            if (state.hasError)
+              Padding(
+                  padding: const EdgeInsets.only(left: 12.0),
+                  child: Text(state.errorText!,
+                      style: const TextStyle(color: Colors.red, fontSize: 12))),
+          ],
+        );
+      },
+    );
+  }
+
+  Row _buildGenderRadio(int value, String label, FormFieldState<int> state) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Radio<int>(
+          value: value,
+          groupValue: selectedGender,
+          onChanged: (value) {
+            setState(() {
+              selectedGender = value;
+              state.didChange(value);
+            });
+          },
+        ),
+        Text(label),
+      ],
+    );
+  }
+
+  Column _buildHobbiesSelection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text("Hobbies:", style: TextStyle(fontSize: 16)),
+        Wrap(
+          spacing: 10,
+          runSpacing: 5,
+          children: hobbies.keys.map((hobby) {
+            return Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Checkbox(
+                  value: hobbies[hobby],
+                  onChanged: (value) {
+                    setState(() {
+                      hobbies[hobby] = value ?? false;
+                    });
+                  },
+                ),
+                Text(hobby),
+              ],
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
+  void _onSubmit() {
+    if (_formKey.currentState!.validate()) {
+      if (hobbies.values.every((hobby) => !hobby)) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('Please select at least one hobby'),
+            duration: Duration(seconds: 2)));
+        return;
+      }
+
+      selectedHobbies = hobbies.entries
+          .where((entry) => entry.value)
+          .map((entry) => entry.key)
+          .toList();
+
+      if (widget.userData == null) {
+        myUser.addUserInList(
+          firstName: firstNameController.text,
+          lastName: lastNameController.text,
+          email: emailController.text,
+          number: mobileController.text,
+          dob: dobController.text,
+          city: selectedCity,
+          gender: selectedGender!,
+          hobbies: selectedHobbies,
+          password: passwordController.text,
+          confirmPassword: confirmPasswordController.text,
+        );
+      } else {
+        myUser.updateUser(
+          firstName: firstNameController.text,
+          lastName: lastNameController.text,
+          email: emailController.text,
+          number: mobileController.text,
+          dob: dobController.text,
+          city: selectedCity,
+          gender: selectedGender!,
+          hobbies: selectedHobbies,
+          password: passwordController.text,
+          confirmPassword: confirmPasswordController.text,
+          id: widget.index,
+        );
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(widget.userData == null
+              ? 'User added successfully'
+              : 'User updated successfully'),
+          duration: const Duration(seconds: 3)));
+
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => UserListPage()));
+    }
+  }
+
+  String? _validateName(String? value, String nameType) {
+    if (value == null || value.isEmpty) return 'Enter $nameType';
+    if (!RegExp(r"^[a-zA-Z\s'-]+$").hasMatch(value))
+      return 'Only alphabets are allowed';
+    if (value.contains(RegExp(r'\s\s+')))
+      return 'No consecutive spaces are allowed';
+    if (value.length < 2) return '$nameType must be at least 2 characters';
+    return null;
+  }
+
+  String? _validateEmail(String? value) {
+    if (value == null || value.isEmpty) return 'Enter email address';
+    if (!RegExp(r'^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
+        .hasMatch(value)) return 'Enter a valid email address';
+    if (isDisposableEmail(value))
+      return 'Disposable email addresses are not allowed';
+    return isEmailUnique(value) ? null : 'This email is already registered';
+  }
+
+  String? _validatePassword(String? value) {
+    if (value == null || value.isEmpty) return 'Enter password';
+    if (value.length < 8) return 'Password must be at least 8 characters long';
+    if (!RegExp(
+            r'^(?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$')
+        .hasMatch(value))
+      return 'Password must include uppercase, lowercase, number, and special character';
+    return null;
+  }
+
+  String? _validateConfirmPassword(String? value) {
+    if (value == null || value.isEmpty) return 'Enter confirm password';
+    if (value != passwordController.text) return 'Passwords do not match';
+    return null;
   }
 }

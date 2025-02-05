@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
           ),
         ), // Set the background color here
         child: const SafeArea(
-          child: Mainscreen(),
+          child: Dashboard(),
         ),
       ),
       debugShowCheckedModeBanner: false,

@@ -5,7 +5,7 @@ export 'package:matrimony_flutter_app/widgets/Add_Profile.dart';
 export 'package:matrimony_flutter_app/widgets/Profile_List.dart';
 export 'package:provider/provider.dart';
 export 'package:matrimony_flutter_app/utils/theme/custom_themes/theme_notifier.dart';
-export 'package:matrimony_flutter_app/widgets/navigation_controller.dart';
+
 export 'package:matrimony_flutter_app/widgets/app_bar.dart';
 export 'package:flutter_speed_dial/flutter_speed_dial.dart';
 export 'package:matrimony_flutter_app/widgets/drawer.dart';

@@ -2,10 +2,10 @@ class User {
   List<Map<String, dynamic>> userList = [];
   User._privateConstructor(){
     addUserInList(
-        firstName: 'John',
-        lastName: 'Doe',
-        email: 'john.doe@example.com',
-        number: '1234123434',
+        firstName: 'Jay',
+        lastName: 'Patel',
+        email: 'jay123@gmail.com',
+        number: '9879634566',
         dob: '01/01/1990',
         city: 'Rajkot',
         gender: 1,
@@ -14,10 +14,10 @@ class User {
         confirmPassword: 'password123'
     );
     addUserInList(
-        firstName: 'Jane',
-        lastName: 'Smith',
-        email: 'jane.smith@example.com',
-        number: '0987654321',
+        firstName: 'Vandan',
+        lastName: 'kakadiya',
+        email: 'Vandankakadiya123@gmail.com',
+        number: '9876543210',
         dob: '02/02/1992',
         city: 'Morbi',
         gender: 0,
@@ -26,9 +26,9 @@ class User {
         confirmPassword: 'password456'
     );
     addUserInList(
-        firstName: 'Alice',
-        lastName: 'Johnson',
-        email: 'alice.johnson@example.com',
+        firstName: 'Arun',
+        lastName: 'Dabhi',
+        email: 'alice.dabhi@example.com',
         number: '1122334455',
         dob: '01/01/1985',
         city: 'Ahmedabad',
@@ -38,9 +38,9 @@ class User {
         confirmPassword: 'password789'
     );
     addUserInList(
-        firstName: 'Bob',
+        firstName: 'om',
         lastName: 'Williams',
-        email: 'bob.williams@example.com',
+        email: 'om.williams@gmail.com',
         number: '2233445566',
         dob: '04/04/1980',
         city: 'Surat',
@@ -50,9 +50,9 @@ class User {
         confirmPassword: 'password101'
     );
     addUserInList(
-        firstName: 'Charlie',
-        lastName: 'Brown',
-        email: 'charlie.brown@example.com',
+        firstName: 'Pragnesh',
+        lastName: 'Bro',
+        email: 'pragnesh.bro@example.com',
         number: '3344556677',
         dob: '11/11/1995',
         city: 'Morbi',

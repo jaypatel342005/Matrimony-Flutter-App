@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:matrimony_flutter_app/widgets/bottom_nav_bar.dart';
+import 'package:matrimony_flutter_app/widgets/Dashboard_Screen.dart';
 
 class Mainscreen extends StatefulWidget {
   const Mainscreen({super.key});
@@ -19,10 +19,7 @@ class _MainscreenState extends State<Mainscreen> {
         appBar: AppBar(
           title: const Text('Main Screen'),
         ),
-        bottomNavigationBar: BottomNavigationBarWidget(),
-        body: const Center(
-          child: Text('Main content here'),
-        ),
+        body: Dashboard()
       ),
     );
   }
