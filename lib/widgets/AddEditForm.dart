@@ -1,20 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'Profile_List.dart';
 import 'export.dart';
-import 'userdata.dart';
 
-class AddUserForm extends StatefulWidget {
+class AddEditForm extends StatefulWidget {
   final Map<String, dynamic>? userData;
   final int? index;
 
-  const AddUserForm({Key? key, this.userData, this.index}) : super(key: key);
+  const AddEditForm({Key? key, this.userData, this.index}) : super(key: key);
 
   @override
-  State<AddUserForm> createState() => _AddUserFormState();
+  State<AddEditForm> createState() => _AddEditFormState();
 }
 
-class _AddUserFormState extends State<AddUserForm> {
+class _AddEditFormState extends State<AddEditForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
@@ -31,6 +29,9 @@ class _AddUserFormState extends State<AddUserForm> {
   String selectedState = 'Gujarat';
   String selectedCity = 'Ahmedabad';
   String selectedReligion = 'Hindu';
+
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
 
   List<String> states = [
     'Andhra Pradesh',
@@ -136,7 +137,7 @@ class _AddUserFormState extends State<AddUserForm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(),
+      appBar: const CustomAppBar(title: 'Matrimony Form',),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Form(
@@ -176,13 +177,39 @@ class _AddUserFormState extends State<AddUserForm> {
               const SizedBox(height: 20),
               _buildTextField(occupationController, 'Occupation', 'Enter Occupation', Icons.work, (value) => null),
               const SizedBox(height: 20),
-              _buildTextField(passwordController, 'Password', 'Enter Password', Icons.lock_outline, (value) => _validatePassword(value)),
+              _buildPasswordField(passwordController, 'Password', 'Enter Password', (value) => _validatePassword(value)),
               const SizedBox(height: 20),
-              _buildTextField(confirmPasswordController, 'Confirm Password', 'Re-enter Password', Icons.lock_outline, (value) => _validateConfirmPassword(value)),
+              _buildPasswordField(confirmPasswordController, 'Confirm Password', 'Re-enter Password', (value) => _validateConfirmPassword(value)),
               const SizedBox(height: 40),
-              ElevatedButton(
-                onPressed: _onSubmit,
-                child: Text(widget.userData == null ? "Add User" : "Update User", style: const TextStyle(fontSize: 16)),
+              Container(
+                decoration: BoxDecoration(
+                  gradient: widget.userData == null
+                      ? LinearGradient(colors: [Colors.blue, Colors.blueAccent])
+                      : LinearGradient(colors: [Colors.green, Colors.greenAccent]),
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                      color: widget.userData == null ? Colors.blue.withOpacity(0.5) : Colors.green.withOpacity(0.5),
+                      spreadRadius: 5,
+                      blurRadius: 15,
+                      offset: Offset(0, 3), // changes position of shadow
+                    ),
+                  ],
+                ),
+                child: ElevatedButton(
+                  onPressed: _onSubmit,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0),
+                    child: Text(
+                      widget.userData == null ? "Add User" : "Update User",
+                      style: const TextStyle(fontSize: 16, color: Colors.white), // Set text color to white for contrast
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    elevation: 0, backgroundColor: Colors.transparent, // Set to 0 to use the shadow from the Container
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)), // Set primary color to transparent to show gradient
+                  ),
+                ),
               ),
             ],
           ),
@@ -198,6 +225,28 @@ class _AddUserFormState extends State<AddUserForm> {
         labelText: label,
         hintText: hint,
         prefixIcon: Icon(icon),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+      ),
+      validator: validator,
+    );
+  }
+
+  TextFormField _buildPasswordField(TextEditingController controller, String label, String hint, String? Function(String?) validator) {
+    return TextFormField(
+      controller: controller,
+      obscureText: _obscurePassword,
+      decoration: InputDecoration(
+        labelText: label,
+        hintText: hint,
+        prefixIcon: const Icon(Icons.lock_outline),
+        suffixIcon: IconButton(
+          icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
+          onPressed: () {
+            setState(() {
+              _obscurePassword = !_obscurePassword;
+            });
+          },
+        ),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
       ),
       validator: validator,
@@ -450,7 +499,7 @@ class _AddUserFormState extends State<AddUserForm> {
 
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(widget.userData == null ? 'User added successfully' : 'User updated successfully'), duration: const Duration(seconds: 3)));
 
-      Navigator.push(context, MaterialPageRoute(builder: (context) => UserListPage()));
+      Navigator.push(context, MaterialPageRoute(builder: (context) => Dashboard()));
     }
   }
 

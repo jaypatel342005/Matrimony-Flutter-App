@@ -84,7 +84,7 @@ class AboutUsPage extends StatelessWidget {
                       Row(
                         children: [
                           Padding(
-                            padding: const EdgeInsets.all(16.0),
+                            padding: const EdgeInsets.all(10.0),
                             child: Image.asset(
                               'assets/images/darshan_logo.png',
                               height: 50,
@@ -92,7 +92,7 @@ class AboutUsPage extends StatelessWidget {
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.all(16.0),
+                            padding: const EdgeInsets.all(5.0),
                             child: Image.asset(
                               'assets/images/ASWDC_logo.png',
                               height: 50,

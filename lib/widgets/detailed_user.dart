@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-
-import 'Add_Profile.dart';
 import 'export.dart';
-import 'userdata.dart';
+import 'package:intl/intl.dart';
 
 final User myUser = User.instance;
 
@@ -18,55 +16,51 @@ class _DetailedUserState extends State<DetailedUser> {
   @override
   Widget build(BuildContext context) {
     final user = myUser.getUserList()[widget.index];
-    // Ensure the image path is correct and added to pubspec.yaml
-    const String imageUrl = 'assets/images/default_avatar.png';
 
-    // A helper function to build rows for key-value pairs
-    Widget buildKeyValueRow(String key, String value) {
+    // Format the date of birth
+    String formattedDob;
+    try {
+      DateTime dob = DateFormat('dd/MM/yyyy').parse(user['dob']);
+      formattedDob = DateFormat('dd/MM/yyyy').format(dob);
+    } catch (e) {
+      formattedDob = 'Invalid date';
+    }
+
+    // A helper function to build rows for key-value pairs with icons
+    Widget buildKeyValueRow(IconData icon, String key, String value) {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 6.0),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              flex: 3,
+            Icon(icon, size: 20, color: Colors.blue),
+            const SizedBox(width: 10),
+            Expanded( 
+              flex: 1,
               child: Text(
                 key,
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
               ),
             ),
             const Text(
               ':',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
             ),
             const SizedBox(width: 8),
             Expanded(
-              flex: 5,
+              flex: 2,
               child: Text(
                 value,
-                style: const TextStyle(fontSize: 18),
+                style: const TextStyle(fontSize: 16),
               ),
             ),
           ],
         ),
       );
     }
-
+    // Text("${user['firstName']} ${user['lastName']}")
     return Scaffold(
-      appBar: AppBar(
-        title: Text("${user['firstName']} ${user['lastName']}"),
-        centerTitle: true,
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.blue, Colors.lightBlueAccent],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-        ),
-      ),
-      // drawer: const CustomDrawer(),
+      appBar: CustomAppBar(title: "${user['firstName']} ${user['lastName']}",),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Center(
@@ -76,7 +70,7 @@ class _DetailedUserState extends State<DetailedUser> {
               // Profile image displayed with a CircleAvatar
               CircleAvatar(
                 radius: 50,
-                backgroundImage: const AssetImage(imageUrl),
+                backgroundImage: const AssetImage('assets/images/default_avatar.png'),
               ),
               const SizedBox(height: 16),
               Text(
@@ -86,6 +80,39 @@ class _DetailedUserState extends State<DetailedUser> {
               const SizedBox(height: 30),
               const Text(
                 "Information",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
+
+              // User Information Card
+              Card(
+                elevation: 3,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                margin: const EdgeInsets.symmetric(vertical: 10),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      buildKeyValueRow(Icons.person, "Gender", user['gender'] == 0 ? 'Female' : user['gender'] == 1 ? 'Male' : 'Other' ),
+                      buildKeyValueRow(Icons.calendar_today, "Date of Birth", formattedDob),
+                      buildKeyValueRow(Icons.date_range, "Age", user['age'].toString()),
+                      buildKeyValueRow(Icons.star, "Religion", user['religion']),
+                      buildKeyValueRow(Icons.people, "Caste", user['caste']),
+                      buildKeyValueRow(Icons.people_outline, "Sub-Caste", user['subCaste']),
+                      buildKeyValueRow(Icons.favorite_border, "Hobbies", user['hobbies'].join(', ')),
+                      buildKeyValueRow(Icons.school, "Higher Education", user['higherEducation']),
+                      buildKeyValueRow(Icons.work, "Occupation", user['occupation']),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // Address Card
+              const Text(
+                "Address",
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
@@ -99,16 +126,16 @@ class _DetailedUserState extends State<DetailedUser> {
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     children: [
-                      buildKeyValueRow("Gender", user['gender'] == 0 ? 'Female' : 'Male'),
-                      buildKeyValueRow("Date of Birth", user['dob']),
-                      buildKeyValueRow("Age", user['age'].toString()),
-                      buildKeyValueRow("City", user['city'].toString()),
-                      buildKeyValueRow("Hobbies", user['hobbies'].join(', ')),
+                      buildKeyValueRow(Icons.location_city, "City", user['city']),
+                      buildKeyValueRow(Icons.map, "State", user['state']),
+                      buildKeyValueRow(Icons.language, "Country", user['country']),
                     ],
                   ),
                 ),
               ),
               const SizedBox(height: 20),
+
+              // Contact Details Card
               const Text(
                 "Contact Details",
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -124,13 +151,14 @@ class _DetailedUserState extends State<DetailedUser> {
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     children: [
-                      buildKeyValueRow("Email ID", user['email']),
-                      buildKeyValueRow("Phone", user['number'].toString()),
+                      buildKeyValueRow(Icons.email, "Email ID", user['email']),
+                      buildKeyValueRow(Icons.phone, "Phone", user['number']),
                     ],
                   ),
                 ),
               ),
               const SizedBox(height: 20),
+
               // Action buttons row
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -141,7 +169,7 @@ class _DetailedUserState extends State<DetailedUser> {
                       final result = await Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => AddUserForm(userData: user, index: widget.index),
+                          builder: (context) => AddEditForm(userData: user, index: widget.index),
                         ),
                       );
                       if (result == true) {
@@ -152,17 +180,11 @@ class _DetailedUserState extends State<DetailedUser> {
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      shape: CircleBorder(), backgroundColor: Colors.blueAccent, // Circular shape
+                      padding: const EdgeInsets.all(16), // Background color
+                      elevation: 6, // Elevated effect
                     ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: const [
-                        Icon(Icons.edit, color: Colors.green),
-                        SizedBox(height: 8),
-                        Text("Edit"),
-                      ],
-                    ),
+                    child: const Icon(Icons.edit, color: Colors.white), // Edit icon only
                   ),
                   // Delete Button
                   ElevatedButton(
@@ -198,17 +220,11 @@ class _DetailedUserState extends State<DetailedUser> {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      shape: CircleBorder(), backgroundColor: Colors.redAccent, // Circular shape
+                      padding: const EdgeInsets.all(16), // Background color
+                      elevation: 6, // Elevated effect
                     ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: const [
-                        Icon(Icons.delete, color: Colors.red),
-                        SizedBox(height: 8),
-                        Text("Delete"),
-                      ],
-                    ),
+                    child: const Icon(Icons.delete, color: Colors.white), // Delete icon only
                   ),
                   // Like/Unlike Button
                   ElevatedButton(
@@ -226,19 +242,13 @@ class _DetailedUserState extends State<DetailedUser> {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      shape: CircleBorder(), backgroundColor: user['isLiked'] ? Colors.pink : Colors.grey, // Circular shape
+                      padding: const EdgeInsets.all(16), // Background color
+                      elevation: 6, // Elevated effect
                     ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.favorite_rounded,
-                          color: user['isLiked'] ? Colors.red : Colors.black54,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(user['isLiked'] ? "Unlike" : 'Like'),
-                      ],
+                    child: Icon(
+                      Icons.favorite_rounded,
+                      color: Colors.white, // Icon color
                     ),
                   ),
                 ],

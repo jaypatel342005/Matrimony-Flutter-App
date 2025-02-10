@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:matrimony_flutter_app/widgets/favoritepage.dart';
-import 'userdata.dart';
 import 'export.dart';
 
 class Dashboard extends StatefulWidget {
@@ -18,135 +17,98 @@ class _DashboardState extends State<Dashboard> {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      appBar: const CustomAppBar(),
+      appBar: const CustomAppBar(title: 'Matrimony Dashboard',),
       drawer: const CustomDrawer(),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         child: Container(
-          margin: const EdgeInsets.only(top: 100),
+          margin: const EdgeInsets.only(top: 80),
           padding: const EdgeInsets.all(16.0),
           child: GridView.count(
             crossAxisCount: 2,
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
+            crossAxisSpacing: 22,
+            mainAxisSpacing: 32,
             shrinkWrap: true,
-            physics: const BouncingScrollPhysics(),
+            physics: const NeverScrollableScrollPhysics(),
             children: [
               buildDashboardButton(
                 index: 0,
-                icon: Icons.person_add_alt_1,
+                imagePath: 'assets/images/add_profile.png',
                 label: 'Add Profile',
                 color: Colors.blue,
+                shadowColor: Colors.blueAccent,
                 isDarkMode: isDarkMode,
+                imageHeight: 80,
+                imageWidth: 70,
+                textSpacing: 21, // Custom spacing
+                clipper: WavyClipper1(),
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                      MaterialPageRoute(builder: (context) => AddUserForm()),
-                  );
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => AddEditForm()));
                 },
               ),
               buildDashboardButton(
                 index: 1,
-                icon: Icons.list_alt,
+                imagePath: 'assets/images/profilelist.png',
                 label: 'Profile List',
                 color: Colors.orange,
+                shadowColor: Colors.orange,
                 isDarkMode: isDarkMode,
+                imageHeight: 95,
+                imageWidth: 85,
+                textSpacing: 11, // Custom spacing
+                clipper: WavyClipper2(),
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                      MaterialPageRoute(builder: (context) => UserListPage()),
-                  );
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileList()));
                 },
               ),
               buildDashboardButton(
                 index: 2,
-                icon: Icons.info_outline,
+                imagePath: 'assets/images/aboutus.png',
                 label: 'About Us',
                 color: Colors.purple,
+                shadowColor: Colors.deepPurple,
                 isDarkMode: isDarkMode,
+                imageHeight: 90,
+                imageWidth: 80,
+                textSpacing: 18, // Custom spacing
+                clipper: WavyClipper3(),
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => AboutUsPage()),
-                  );
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => AboutUsPage()));
                 },
               ),
               buildDashboardButton(
                 index: 3,
-                icon: Icons.favorite,
+                imagePath: 'assets/images/like.png',
                 label: 'Favorites',
                 color: Colors.red,
+                shadowColor: Colors.redAccent,
                 isDarkMode: isDarkMode,
+                imageHeight: 110, // Larger for better balance
+                imageWidth: 100,
+                textSpacing: 0, // Custom spacing
+                clipper: WavyClipper4(),
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => FavoritesPage()),
-                  );
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => FavoritesPage()));
                 },
               ),
             ],
           ),
         ),
       ),
-      floatingActionButton: SpeedDial(
-        icon: Icons.menu,
-        activeIcon: Icons.close,
-        backgroundColor: Colors.blue,
-        overlayColor: Colors.black,
-        overlayOpacity: 0.5,
-        spacing: 12,
-        spaceBetweenChildren: 8,
-        children: [
-          SpeedDialChild(
-            child: const Icon(Icons.person_add_alt_1, color: Colors.white),
-            backgroundColor: Colors.blue,
-            label: 'Add Profile',
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => AddUserForm()),
-              );
-            },
-          ),
-          SpeedDialChild(
-            child: const Icon(Icons.list_alt, color: Colors.white),
-            backgroundColor: Colors.orange,
-            label: 'Profile List',
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => UserListPage()),
-              );
-            },
-          ),
-          SpeedDialChild(
-            child: const Icon(Icons.favorite, color: Colors.white),
-            backgroundColor: Colors.red,
-            label: 'Favorites',
-            onTap: () => print('Favorites selected'),
-          ),
-          SpeedDialChild(
-            child: const Icon(Icons.info_outline, color: Colors.white),
-            backgroundColor: Colors.purple,
-            label: 'About Us',
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => AboutUsPage()),
-              );
-            },
-          ),
-        ],
-      ),
     );
   }
 
   Widget buildDashboardButton({
     required int index,
-    required IconData icon,
+    required String imagePath,
     required String label,
     required Color color,
+    required Color shadowColor,
     required bool isDarkMode,
+    required double imageHeight,
+    required double imageWidth,
+    required double textSpacing, // Custom spacing for each card
+    required CustomClipper<Path> clipper,
     required VoidCallback onPressed,
   }) {
     final isHovered = _hoveredIndex == index;
@@ -154,44 +116,133 @@ class _DashboardState extends State<Dashboard> {
     return MouseRegion(
       onEnter: (_) => setState(() => _hoveredIndex = index),
       onExit: (_) => setState(() => _hoveredIndex = -1),
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          foregroundColor: color,
-          backgroundColor: isDarkMode
-              ? (isHovered ? color.withOpacity(0.8) : Colors.grey[800])
-              : (isHovered ? color.withOpacity(0.8) : Colors.white),
-          shadowColor: isDarkMode
-              ? (isHovered ? Colors.white.withOpacity(0.4) : Colors.white.withOpacity(0.2))
-              : (isHovered ? color.withOpacity(0.7) : Colors.grey.withOpacity(0.5)),
-          elevation: isHovered ? 12 : 6,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          padding: const EdgeInsets.all(18),
-        ),
-        onPressed: onPressed,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeInOut,
-              height: isHovered ? 50 : 40,
-              width: isHovered ? 50 : 40,
-              child: Icon(icon, size: 32, color: color),
+      child: GestureDetector(
+        onTap: onPressed,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 50),
+          curve: Curves.easeInOut,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(25),
+            gradient: LinearGradient(
+              colors: isHovered
+                  ? [color.withOpacity(0.9), Colors.white]
+                  : [color, Colors.grey[300]!.withOpacity(0.6)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: isDarkMode
-                    ? (isHovered ? color : Colors.white)
-                    : (isHovered ? color : Colors.black),
+            boxShadow: [
+              BoxShadow(
+                color: isHovered ? shadowColor.withOpacity(0.10) : shadowColor.withOpacity(0.6),
+                blurRadius: isHovered ? 25 : 18,
+                offset: const Offset(0, 9),
               ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(25),
+            child: Stack(
+              children: [
+                ClipPath(
+                  clipper: clipper,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [color.withOpacity(0.4), Colors.white.withOpacity(0.2)],
+                        begin: Alignment.bottomLeft,
+                        end: Alignment.topRight,
+                      ),
+                    ),
+                  ),
+                ),
+                Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                        height: isHovered ? imageHeight + 10 : imageHeight,
+                        width: isHovered ? imageWidth + 10 : imageWidth,
+                        child: Image.asset(imagePath, fit: BoxFit.contain),
+                      ),
+                      SizedBox(height: textSpacing), // Custom spacing applied
+                      Text(
+                        label,
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: isDarkMode ? (isHovered ? color : Colors.white) : (isHovered ? color : Colors.black),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
   }
+}
+
+// Unique WavyClipper Designs for Each Card
+class WavyClipper1 extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    final path = Path();
+    path.lineTo(0, size.height * 0.6);
+    path.quadraticBezierTo(size.width * 0.5, size.height * 1.3, size.width, size.height * 0.6);
+    path.lineTo(size.width, 0);
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
+}
+
+class WavyClipper2 extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    final path = Path();
+    path.lineTo(0, size.height * 0.7);
+    path.quadraticBezierTo(size.width * 0.5, size.height * 1.2, size.width, size.height * 0.7);
+    path.lineTo(size.width, 0);
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
+}
+
+class WavyClipper3 extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    final path = Path();
+    path.lineTo(0, size.height * 0.55);
+    path.quadraticBezierTo(size.width * 0.4, size.height * 1.1, size.width, size.height * 0.55);
+    path.lineTo(size.width, 0);
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
+}
+
+class WavyClipper4 extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    final path = Path();
+    path.lineTo(0, size.height * 0.5);
+    path.quadraticBezierTo(size.width * 0.5, size.height * 1.4, size.width, size.height * 0.5);
+    path.lineTo(size.width, 0);
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }

@@ -25,18 +25,19 @@ class MyApp extends StatelessWidget {
       themeMode: themeNotifier.getThemeMode,
       theme: TAppTheme.lightTheme,
       darkTheme: TAppTheme.darkTheme,
-      home: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.blue, Colors.lightBlueAccent],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ), // Set the background color here
-        child: const SafeArea(
-          child: Dashboard(),
-        ),
-      ),
+      home: Dashboard(),
+      // Container(
+      //   decoration: const BoxDecoration(
+      //     gradient: LinearGradient(
+      //       colors: [Colors.blue, Colors.lightBlueAccent],
+      //       begin: Alignment.topLeft,
+      //       end: Alignment.bottomRight,
+      //     ),
+      //   ), // Set the background color here
+      //   child: const SafeArea(
+      //     child: Dashboard(),
+      //   ),
+      // ),
       debugShowCheckedModeBanner: false,
     );
   }

@@ -1,8 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart'; // Import Provider
+import 'package:provider/provider.dart';
 import 'favoritepage.dart';
-import 'userdata.dart';
 import 'export.dart';
+// final List<List<Color>> cardGradients = [
+//   [Colors.blue.shade500, Colors.indigo.shade100],
+//   [Colors.deepPurple.shade500, Colors.blueAccent.shade100],
+//   [Colors.indigo.shade500, Colors.purple.shade100],
+//   [Colors.purple.shade500, Colors.blueGrey.shade100],
+//   [Colors.blueAccent.shade400, Colors.deepPurpleAccent.shade100],
+//   [Colors.blueGrey.shade500, Colors.indigoAccent.shade100],
+//   [Colors.indigoAccent.shade400, Colors.purpleAccent.shade100],
+//   [Colors.purpleAccent.shade400, Colors.blue.shade100],
+//   [Colors.indigo.shade500, Colors.blueAccent.shade100],
+//   [Colors.deepPurpleAccent.shade400, Colors.blueGrey.shade100],
+//   [Colors.blue.shade500, Colors.purpleAccent.shade100],
+//   [Colors.indigoAccent.shade400, Colors.deepPurple.shade100],
+// ];
 
 class CustomDrawer extends StatefulWidget {
   const CustomDrawer({Key? key}) : super(key: key);
@@ -108,7 +121,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => AddUserForm(),
+                    builder: (context) => AddEditForm(),
                   ),
                 );
               },
@@ -123,7 +136,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => UserListPage(),
+                    builder: (context) => ProfileList(),
                   ),
                 );
               },
