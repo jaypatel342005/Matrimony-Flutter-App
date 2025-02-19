@@ -1,26 +1,61 @@
-import 'package:flutter/material.dart';
 import 'export.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter/cupertino.dart';
 
 final User myUser = User.instance;
 
 class DetailedUser extends StatefulWidget {
   final int index;
-  const DetailedUser({Key? key, required this.index}) : super(key: key);
+  const DetailedUser({super.key, required this.index});
 
   @override
   State<DetailedUser> createState() => _DetailedUserState();
 }
 
 class _DetailedUserState extends State<DetailedUser> {
+  Map<String, dynamic>? userData;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    final users = await myUser.getUserList();
+    if (mounted) {
+      setState(() {
+        userData = users.firstWhere((user) => user['id'] == widget.index);
+        isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final user = myUser.getUserList()[widget.index];
+    if (isLoading) {
+      return Scaffold(
+        appBar: CustomAppBar(title: "Loading..."),
+        body: const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    if (userData == null) {
+      return Scaffold(
+        appBar: CustomAppBar(title: "Error"),
+        body: const Center(
+          child: Text("User not found"),
+        ),
+      );
+    }
 
     // Format the date of birth
     String formattedDob;
     try {
-      DateTime dob = DateFormat('dd/MM/yyyy').parse(user['dob']);
+      DateTime dob = DateFormat('dd/MM/yyyy').parse(userData!['dob']);
       formattedDob = DateFormat('dd/MM/yyyy').format(dob);
     } catch (e) {
       formattedDob = 'Invalid date';
@@ -35,7 +70,7 @@ class _DetailedUserState extends State<DetailedUser> {
           children: [
             Icon(icon, size: 20, color: Colors.blue),
             const SizedBox(width: 10),
-            Expanded( 
+            Expanded(
               flex: 1,
               child: Text(
                 key,
@@ -58,9 +93,11 @@ class _DetailedUserState extends State<DetailedUser> {
         ),
       );
     }
-    // Text("${user['firstName']} ${user['lastName']}")
+
     return Scaffold(
-      appBar: CustomAppBar(title: "${user['firstName']} ${user['lastName']}",),
+      appBar: CustomAppBar(
+        title: "${userData!['firstName']} ${userData!['lastName']}",
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Center(
@@ -68,13 +105,13 @@ class _DetailedUserState extends State<DetailedUser> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               // Profile image displayed with a CircleAvatar
-              CircleAvatar(
+              const CircleAvatar(
                 radius: 50,
-                backgroundImage: const AssetImage('assets/images/default_avatar.png'),
+                backgroundImage: AssetImage('assets/images/default_avatar.png'),
               ),
               const SizedBox(height: 16),
               Text(
-                "${user['firstName']} ${user['lastName']}",
+                "${userData!['firstName']} ${userData!['lastName']}",
                 style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 30),
@@ -95,15 +132,19 @@ class _DetailedUserState extends State<DetailedUser> {
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     children: [
-                      buildKeyValueRow(Icons.person, "Gender", user['gender'] == 0 ? 'Female' : user['gender'] == 1 ? 'Male' : 'Other' ),
+                      buildKeyValueRow(Icons.person, "Gender",
+                          userData!['gender'] == 0 ? 'Female' : userData!['gender'] == 1 ? 'Male' : 'Other'),
                       buildKeyValueRow(Icons.calendar_today, "Date of Birth", formattedDob),
-                      buildKeyValueRow(Icons.date_range, "Age", user['age'].toString()),
-                      buildKeyValueRow(Icons.star, "Religion", user['religion']),
-                      buildKeyValueRow(Icons.people, "Caste", user['caste']),
-                      buildKeyValueRow(Icons.people_outline, "Sub-Caste", user['subCaste']),
-                      buildKeyValueRow(Icons.favorite_border, "Hobbies", user['hobbies'].join(', ')),
-                      buildKeyValueRow(Icons.school, "Higher Education", user['higherEducation']),
-                      buildKeyValueRow(Icons.work, "Occupation", user['occupation']),
+                      buildKeyValueRow(Icons.date_range, "Age", userData!['age'].toString()),
+                      buildKeyValueRow(Icons.star, "Religion", userData!['religion']),
+                      buildKeyValueRow(Icons.people, "Caste", userData!['caste']),
+                      buildKeyValueRow(Icons.people_outline, "Sub-Caste", userData!['subCaste']),
+                      buildKeyValueRow(Icons.favorite_border, "Hobbies", 
+                          (userData!['hobbies'] is List 
+                              ? (userData!['hobbies'] as List).join(', ')
+                              : userData!['hobbies'].toString())),
+                      buildKeyValueRow(Icons.school, "Higher Education", userData!['higherEducation']),
+                      buildKeyValueRow(Icons.work, "Occupation", userData!['occupation']),
                     ],
                   ),
                 ),
@@ -126,9 +167,9 @@ class _DetailedUserState extends State<DetailedUser> {
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     children: [
-                      buildKeyValueRow(Icons.location_city, "City", user['city']),
-                      buildKeyValueRow(Icons.map, "State", user['state']),
-                      buildKeyValueRow(Icons.language, "Country", user['country']),
+                      buildKeyValueRow(Icons.location_city, "City", userData!['city']),
+                      buildKeyValueRow(Icons.map, "State", userData!['state']),
+                      buildKeyValueRow(Icons.language, "Country", userData!['country']),
                     ],
                   ),
                 ),
@@ -151,8 +192,8 @@ class _DetailedUserState extends State<DetailedUser> {
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     children: [
-                      buildKeyValueRow(Icons.email, "Email ID", user['email']),
-                      buildKeyValueRow(Icons.phone, "Phone", user['number']),
+                      buildKeyValueRow(Icons.email, "Email ID", userData!['email']),
+                      buildKeyValueRow(Icons.phone, "Phone", userData!['number']),
                     ],
                   ),
                 ),
@@ -169,49 +210,54 @@ class _DetailedUserState extends State<DetailedUser> {
                       final result = await Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => AddEditForm(userData: user, index: widget.index),
+                          builder: (context) => AddEditForm(
+                            userData: userData!,
+                            index: widget.index,
+                          ),
                         ),
                       );
                       if (result == true) {
-                        setState(() {
-                          // Refresh the user list if needed
-                          myUser.getUserList();
-                        });
+                        _loadUserData(); // Reload user data after edit
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      shape: CircleBorder(), backgroundColor: Colors.blueAccent, // Circular shape
-                      padding: const EdgeInsets.all(16), // Background color
-                      elevation: 6, // Elevated effect
+                      shape: const CircleBorder(),
+                      backgroundColor: Colors.blueAccent,
+                      padding: const EdgeInsets.all(16),
+                      elevation: 6,
                     ),
-                    child: const Icon(Icons.edit, color: Colors.white), // Edit icon only
+                    child: const Icon(Icons.edit, color: Colors.white),
                   ),
                   // Delete Button
                   ElevatedButton(
                     onPressed: () {
                       showDialog(
                         context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text('Are you sure you want to delete?'),
+                        builder: (context) => CupertinoAlertDialog(
+                          title: const Text('Delete User'),
+                          content: const Text('Are you sure you want to delete this user? This action cannot be undone.'),
                           actions: [
-                            TextButton(
+                            CupertinoDialogAction(
+                              isDefaultAction: true,
                               onPressed: () {
                                 Navigator.pop(context);
                               },
                               child: const Text('Cancel'),
                             ),
-                            TextButton(
-                              onPressed: () {
-                                setState(() {
-                                  myUser.deleteUser(widget.index);
-                                });
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('User deleted successfully'),
-                                    duration: Duration(seconds: 3),
-                                  ),
-                                );
-                                Navigator.pop(context);
+                            CupertinoDialogAction(
+                              isDestructiveAction: true,
+                              onPressed: () async {
+                                await myUser.deleteUser(userData!['id']);
+                                if (mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('User deleted successfully'),
+                                      duration: Duration(seconds: 3),
+                                    ),
+                                  );
+                                  Navigator.pop(context); // Close dialog
+                                  Navigator.pop(context); // Go back to previous screen
+                                }
                               },
                               child: const Text('Delete'),
                             ),
@@ -220,35 +266,57 @@ class _DetailedUserState extends State<DetailedUser> {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      shape: CircleBorder(), backgroundColor: Colors.redAccent, // Circular shape
-                      padding: const EdgeInsets.all(16), // Background color
-                      elevation: 6, // Elevated effect
+                      shape: const CircleBorder(),
+                      backgroundColor: Colors.redAccent,
+                      padding: const EdgeInsets.all(16),
+                      elevation: 6,
                     ),
-                    child: const Icon(Icons.delete, color: Colors.white), // Delete icon only
+                    child: const Icon(Icons.delete, color: Colors.white),
                   ),
                   // Like/Unlike Button
                   ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        user['isLiked'] = !user['isLiked'];
-                      });
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(user['isLiked']
-                              ? 'User liked successfully'
-                              : 'User unliked successfully'),
-                          duration: const Duration(milliseconds: 500),
-                        ),
-                      );
+                    onPressed: () async {
+                      if (!mounted) return;
+                      
+                      try {
+                        int newValue = userData!['isLiked'] == 0 ? 1 : 0;
+                        await myUser.updateUserLikeStatus(userData!['id'], newValue);
+                        
+                        setState(() {
+                          userData!['isLiked'] = newValue;
+                        });
+                        
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(newValue == 1 
+                                  ? 'User liked successfully' 
+                                  : 'User unliked successfully'),
+                              duration: const Duration(milliseconds: 500),
+                            ),
+                          );
+                        }
+                      } catch (e) {
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Error updating like status'),
+                              duration: Duration(seconds: 2),
+                            ),
+                          );
+                        }
+                      }
                     },
                     style: ElevatedButton.styleFrom(
-                      shape: CircleBorder(), backgroundColor: user['isLiked'] ? Colors.pink : Colors.grey, // Circular shape
-                      padding: const EdgeInsets.all(16), // Background color
-                      elevation: 6, // Elevated effect
+                      shape: const CircleBorder(),
+                      backgroundColor: userData!['isLiked'] == 1 ? Colors.pink : Colors.grey,
+                      padding: const EdgeInsets.all(16),
+                      elevation: 6,
                     ),
                     child: Icon(
                       Icons.favorite_rounded,
-                      color: Colors.white, // Icon color
+                      color: Colors.white,
+                      size: 24,
                     ),
                   ),
                 ],

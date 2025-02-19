@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'export.dart';
 
 class AboutUsPage extends StatelessWidget {
+  const AboutUsPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('About Us'),
-        backgroundColor: Colors.purple,
+      appBar: const CustomAppBar(
+        title: 'About Us',
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -15,13 +17,17 @@ class AboutUsPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Logo and Title Section
-              const Center(
+              Center(
                 child: Column(
                   children: [
-                    Icon(Icons.keyboard_alt_outlined, size: 80, color: Colors.orange),
-                    SizedBox(height: 8),
-                    Text(
-                      'Typing Tutor',
+                    Image.asset(
+                      'assets/images/pixelcut-export.png',
+                      height: 80,
+                      width: 80,
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Matrimony App',
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
@@ -53,9 +59,10 @@ class AboutUsPage extends StatelessWidget {
                       SizedBox(height: 8),
                       _buildInfoRow('Developed by', 'Jay Patel (23010101201)'),
                       _buildInfoRow('Mentored by', 'Prof. Mehul Bhundiya'),
-                      _buildInfoRow('Explored by', 'ASWDC, School of Computer Science'),
                       _buildInfoRow(
-                          'Eulogized by', 'Darshan University, Rajkot, Gujarat - INDIA'),
+                          'Explored by', 'ASWDC, School of Computer Science'),
+                      _buildInfoRow('Eulogized by',
+                          'Darshan University, Rajkot, Gujarat - INDIA'),
                     ],
                   ),
                 ),

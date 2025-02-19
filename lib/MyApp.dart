@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:matrimony_flutter_app/MainScreen.dart';
 import 'package:matrimony_flutter_app/utils/theme/custom_themes/theme_notifier.dart';
 import 'package:matrimony_flutter_app/utils/theme/theme.dart';
 import 'package:provider/provider.dart';
@@ -17,15 +16,17 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     return MaterialApp(
       title: 'Flutter Demo',
-      themeMode: themeNotifier.getThemeMode,
+      themeMode: themeNotifier.currentThemeMode,
       theme: TAppTheme.lightTheme,
       darkTheme: TAppTheme.darkTheme,
-      home: Dashboard(),
+      home: const Dashboard(),
       // Container(
       //   decoration: const BoxDecoration(
       //     gradient: LinearGradient(

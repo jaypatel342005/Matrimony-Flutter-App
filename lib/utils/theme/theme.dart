@@ -1,12 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:matrimony_flutter_app/utils/constants/colors.dart';
-import 'package:matrimony_flutter_app/utils/theme/custom_themes/TDialogTheme.dart';
-import 'package:matrimony_flutter_app/utils/theme/custom_themes/TFloatingActionButtonTheme.dart';
-import 'package:matrimony_flutter_app/utils/theme/custom_themes/TIconTheme.dart';
-import 'package:matrimony_flutter_app/utils/theme/custom_themes/TListTileTheme.dart';
-import 'package:matrimony_flutter_app/utils/theme/custom_themes/TSliderTheme.dart';
-import 'package:matrimony_flutter_app/utils/theme/custom_themes/TSwitchTheme.dart';
-import 'package:matrimony_flutter_app/utils/theme/custom_themes/TTextButtonTheme.dart';
 import 'package:matrimony_flutter_app/utils/theme/custom_themes/appbar_theme.dart';
 import 'package:matrimony_flutter_app/utils/theme/custom_themes/bottom_sheet_theme.dart';
 import 'package:matrimony_flutter_app/utils/theme/custom_themes/checkbox_theme.dart';

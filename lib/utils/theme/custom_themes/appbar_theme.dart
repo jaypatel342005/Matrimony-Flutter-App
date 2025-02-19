@@ -12,9 +12,9 @@ class TAppBarTheme {
     scrolledUnderElevation: 0,
     backgroundColor: TColors.primaryBackground,
     surfaceTintColor: Colors.transparent,
-    iconTheme: const IconThemeData(color: Colors.black, size: 24),
-    actionsIconTheme: const IconThemeData(color: Colors.black, size: 24),
-    titleTextStyle: const TextStyle(
+    iconTheme: IconThemeData(color: Colors.black, size: 24),
+    actionsIconTheme: IconThemeData(color: Colors.black, size: 24),
+    titleTextStyle: TextStyle(
       fontSize: 18.0,
       fontWeight: FontWeight.w600,
       color: Colors.black,

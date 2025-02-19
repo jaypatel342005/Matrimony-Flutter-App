@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'favoritepage.dart';
 import 'export.dart';
 // final List<List<Color>> cardGradients = [
@@ -18,7 +16,7 @@ import 'export.dart';
 // ];
 
 class CustomDrawer extends StatefulWidget {
-  const CustomDrawer({Key? key}) : super(key: key);
+  const CustomDrawer({super.key});
 
   @override
   State<CustomDrawer> createState() => _CustomDrawerState();
@@ -28,7 +26,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
   @override
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
-    ThemeMode themeMode = themeNotifier.getThemeMode;
+    ThemeMode themeMode = themeNotifier.currentThemeMode;
 
     // Determine if the system is currently using dark mode
     final bool isSystemDarkMode =
@@ -39,16 +37,14 @@ class _CustomDrawerState extends State<CustomDrawer> {
     IconData toggleThemeIcon;
     if (themeMode == ThemeMode.system) {
       toggleThemeLabel =
-      isSystemDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode';
-      toggleThemeIcon =
-      isSystemDarkMode ? Icons.light_mode : Icons.dark_mode;
+          isSystemDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+      toggleThemeIcon = isSystemDarkMode ? Icons.light_mode : Icons.dark_mode;
     } else {
       toggleThemeLabel = themeMode == ThemeMode.dark
           ? 'Switch to Light Mode'
           : 'Switch to Dark Mode';
-      toggleThemeIcon = themeMode == ThemeMode.dark
-          ? Icons.light_mode
-          : Icons.dark_mode;
+      toggleThemeIcon =
+          themeMode == ThemeMode.dark ? Icons.light_mode : Icons.dark_mode;
     }
 
     return SafeArea(
@@ -105,9 +101,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => Dashboard()
-                  ),
+                  MaterialPageRoute(builder: (context) => Dashboard()),
                 );
               },
             ),
@@ -117,7 +111,6 @@ class _CustomDrawerState extends State<CustomDrawer> {
               label: 'Add Profile',
               color: Colors.green,
               onTap: () {
-
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -132,7 +125,6 @@ class _CustomDrawerState extends State<CustomDrawer> {
               label: 'Profile List',
               color: Colors.orange,
               onTap: () {
-
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -165,26 +157,14 @@ class _CustomDrawerState extends State<CustomDrawer> {
                 );
               },
             ),
-            const Divider(),
-            ListTile(
-              leading: Icon(toggleThemeIcon, color: Colors.grey),
-              title: Text(
-                toggleThemeLabel,
-                style: const TextStyle(
-                    fontSize: 16, fontWeight: FontWeight.w600),
-              ),
-              onTap: () {
-                Navigator.pop(context); // Close the drawer
-                themeNotifier.toggleTheme();
-              },
-            ),
+            const Divider(height: 24),
+            _buildThemeSwitch(context),
             ListTile(
               leading: const Icon(Icons.settings_system_daydream,
                   color: Colors.grey),
               title: const Text(
                 'Use System Theme',
-                style: TextStyle(
-                    fontSize: 16, fontWeight: FontWeight.w600),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
               onTap: () {
                 Navigator.pop(context); // Close the drawer
@@ -198,26 +178,83 @@ class _CustomDrawerState extends State<CustomDrawer> {
   }
 
   Widget buildDrawerItem(
-      BuildContext context, {
-        required IconData icon,
-        required String label,
-        required Color color,
-        required VoidCallback onTap,
-      }) {
-    return InkWell(
-      onTap: () {
-        Navigator.pop(context); // Close the drawer
-        onTap(); // Call the provided callback
-      },
-      splashColor: color.withOpacity(0.3),
-      highlightColor: color.withOpacity(0.1),
-      child: ListTile(
-        leading: Icon(icon, color: color),
-        title: Text(
-          label,
-          style: const TextStyle(
-              fontSize: 16, fontWeight: FontWeight.w600),
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        gradient: LinearGradient(
+          colors: [
+            color.withOpacity(0.1),
+            color.withOpacity(0.05),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
+      ),
+      child: InkWell(
+        onTap: () {
+          Navigator.pop(context); // Close the drawer
+          onTap(); // Call the provided callback
+        },
+        borderRadius: BorderRadius.circular(10),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  icon,
+                  color: color,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: color,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildThemeSwitch(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    ThemeMode themeMode = themeNotifier.currentThemeMode;
+
+    return ListTile(
+      leading: Icon(
+        themeMode == ThemeMode.dark ? Icons.dark_mode : Icons.light_mode,
+        color: Theme.of(context).iconTheme.color,
+      ),
+      title: Text(
+        themeMode == ThemeMode.dark ? 'Dark Mode' : 'Light Mode',
+        style: TextStyle(
+          color: Theme.of(context).textTheme.bodyLarge?.color,
+        ),
+      ),
+      trailing: Switch(
+        value: themeMode == ThemeMode.dark,
+        onChanged: (value) {
+          themeNotifier.toggleTheme();
+        },
       ),
     );
   }
