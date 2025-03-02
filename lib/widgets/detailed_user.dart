@@ -34,6 +34,7 @@ class _DetailedUserState extends State<DetailedUser> {
 
   @override
   Widget build(BuildContext context) {
+    
     if (isLoading) {
       return Scaffold(
         appBar: CustomAppBar(title: "Loading..."),
