@@ -64,19 +64,19 @@ class _DashboardChartsState extends State<DashboardCharts> {
 
       if (!mounted) return;
 
-      setState(() {
-        _userData = users;
-        _isLoading = false;
-      });
+        setState(() {
+          _userData = users;
+          _isLoading = false;
+        });
     } catch (e) {
       if (!mounted) return;
 
-      setState(() {
-        _error = 'Error loading data: $e';
-        _isLoading = false;
-      });
+        setState(() {
+          _error = 'Error loading data: $e';
+          _isLoading = false;
+        });
+      }
     }
-  }
 
   void _initializeData() {
     if (_userData.isEmpty) return;
@@ -214,7 +214,7 @@ class _DashboardChartsState extends State<DashboardCharts> {
         const SizedBox(height: 5),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+            children: [
             IconButton(
               icon: const Icon(Icons.arrow_left, size: 20),
               onPressed: () {
@@ -249,12 +249,12 @@ class _DashboardChartsState extends State<DashboardCharts> {
 
   Widget _buildChart(int index) {
     final charts = [
-      _buildGenderPieChart(),
-      _buildAgeBarChart(),
-      _buildReligionDonutChart(),
-      _buildCityDistributionChart(),
-      _buildEducationChart(),
-      _buildOccupationChart(),
+              _buildGenderPieChart(),
+              _buildAgeBarChart(),
+              _buildReligionDonutChart(),
+              _buildCityDistributionChart(),
+              _buildEducationChart(),
+              _buildOccupationChart(),
     ];
 
     return Hero(
@@ -429,9 +429,9 @@ class _DashboardChartsState extends State<DashboardCharts> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+        Text(
             'Key Metrics',
-            style: TextStyle(
+          style: TextStyle(
               fontSize: math.max(size.width * (isTablet ? 0.02 : 0.018), 16.0) *
                   textScaleFactor,
               fontWeight: FontWeight.bold,
@@ -456,9 +456,9 @@ class _DashboardChartsState extends State<DashboardCharts> {
               size,
               textScaleFactor,
               spacing,
-            ),
           ),
-        ],
+        ),
+      ],
       ),
     );
   }
@@ -1679,11 +1679,11 @@ class _DashboardChartsState extends State<DashboardCharts> {
                                         ),
                                       ),
                                     ),
-                                  );
-                                }).toList(),
+                    );
+                  }).toList(),
                               ),
                             ),
-                          ),
+                ),
                         ),
                       ),
                     ],
@@ -1726,24 +1726,24 @@ class _DashboardChartsState extends State<DashboardCharts> {
                   // Pie Chart
                   Expanded(
                     flex: 2,
-                    child: PieChart(
-                      PieChartData(
+              child: PieChart(
+                PieChartData(
                         centerSpaceRadius: 18,
                         sectionsSpace: 1,
-                        sections: educationCount.entries.map((e) {
+                  sections: educationCount.entries.map((e) {
                           final color = Colors.primaries[
                               educationCount.keys.toList().indexOf(e.key) %
                                   Colors.primaries.length];
-                          return PieChartSectionData(
-                            value: e.value.toDouble(),
+                    return PieChartSectionData(
+                      value: e.value.toDouble(),
                             title: '',
                             color: color,
-                            radius: 50,
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                  ),
+                      radius: 50,
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
                   // Legend
                   Expanded(
                     flex: 3,
@@ -1767,9 +1767,9 @@ class _DashboardChartsState extends State<DashboardCharts> {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 30.0),
                           child: Column(
-                            children: educationCount.entries.map((e) {
+              children: educationCount.entries.map((e) {
                               final color = Colors.primaries[
-                                  educationCount.keys.toList().indexOf(e.key) %
+                      educationCount.keys.toList().indexOf(e.key) %
                                       Colors.primaries.length];
                               final percentage =
                                   (e.value / _userData.length * 100)
@@ -1825,8 +1825,8 @@ class _DashboardChartsState extends State<DashboardCharts> {
                                     ),
                                   ],
                                 ),
-                              );
-                            }).toList(),
+                );
+              }).toList(),
                           ),
                         ),
                       ),
@@ -1876,7 +1876,7 @@ class _DashboardChartsState extends State<DashboardCharts> {
                   final percentage =
                       (entry.value / _userData.length * 100).toStringAsFixed(1);
 
-                  return Padding(
+                          return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 4.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1884,7 +1884,7 @@ class _DashboardChartsState extends State<DashboardCharts> {
                         Row(
                           children: [
                             Expanded(
-                              child: Text(
+                            child: Text(
                                 entry.key,
                                 style: TextStyle(
                                   fontSize: 11,
@@ -1926,7 +1926,7 @@ class _DashboardChartsState extends State<DashboardCharts> {
                         ),
                       ],
                     ),
-                  );
+                    );
                 },
               ),
             ),

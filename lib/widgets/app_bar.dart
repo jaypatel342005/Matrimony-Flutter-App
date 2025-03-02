@@ -4,11 +4,13 @@ import 'package:flutter/services.dart';
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final VoidCallback? onSearchTap;
+  final VoidCallback? onSortTap;
 
   const CustomAppBar({
     super.key,
     required this.title,
     this.onSearchTap,
+    this.onSortTap,
   });
 
   bool get _shouldShowSearchIcon {
@@ -28,7 +30,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           SizedBox(
             height: preferredSize.height + 40,
             child: CustomPaint(
-              size: Size(MediaQuery.of(context).size.width, preferredSize.height + 40),
+              size: Size(
+                  MediaQuery.of(context).size.width, preferredSize.height + 40),
               painter: AppBarPainter(),
             ),
           ),
@@ -43,16 +46,26 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               surfaceTintColor: Colors.transparent,
               shadowColor: Colors.transparent,
               scrolledUnderElevation: 0,
-              actions: _shouldShowSearchIcon ? [
-                IconButton(
-                  icon: const Icon(
-                    Icons.search,
-                    color: Colors.white,
-                  ),
-                  onPressed: onSearchTap,
-                ),
-                const SizedBox(width: 8),
-              ] : null,
+              actions: _shouldShowSearchIcon
+                  ? [
+                      IconButton(
+                        icon: const Icon(
+                          Icons.search,
+                          color: Colors.white,
+                        ),
+                        onPressed: onSearchTap,
+                      ),
+                      if (title == "Profile List")
+                        IconButton(
+                          icon: const Icon(
+                            Icons.sort,
+                            color: Colors.white,
+                          ),
+                          onPressed: onSortTap,
+                        ),
+                      const SizedBox(width: 8),
+                    ]
+                  : null,
             ),
           ),
           Positioned(
@@ -97,20 +110,26 @@ class AppBarPainter extends CustomPainter {
       ..moveTo(0, 0)
       ..lineTo(size.width * .08, 0.0)
       ..cubicTo(
-        size.width * 0.04, 0.0, // x1, y1
-        0.0, size.height * 0.04, // x2, y2
-        0.0, size.height * 0.1 // x3, y3
-      );
+          size.width * 0.04,
+          0.0, // x1, y1
+          0.0,
+          size.height * 0.04, // x2, y2
+          0.0,
+          size.height * 0.1 // x3, y3
+          );
 
     // Right curve
     Path path_2 = Path()
       ..moveTo(size.width, 0)
       ..lineTo(size.width * .92, 0.0)
       ..cubicTo(
-        size.width * .96, 0.0, // x1, y1
-        size.width, size.height * 0.04, // x2, y2
-        size.width, size.height * 0.1 // x3, y3
-      );
+          size.width * .96,
+          0.0, // x1, y1
+          size.width,
+          size.height * 0.04, // x2, y2
+          size.width,
+          size.height * 0.1 // x3, y3
+          );
 
     // Top line
     Path path_3 = Path()

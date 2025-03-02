@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'animation_service.dart';
 
 class NavigationService {
-  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  static final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>();
   static final List<Route<dynamic>> _routeHistory = [];
-  
+
   static NavigatorState? get navigator => navigatorKey.currentState;
 
   static Future<T?> navigateTo<T>(Widget page, {bool replace = false}) async {
@@ -53,17 +54,29 @@ class NavigationService {
     }
   }
 
-  static Future<T?> navigateWithFade<T>(
-    Widget page, {
-    bool replace = false,
-    Duration? duration,
-  }) {
-    return navigateWithAnimation<T>(
-      page: page,
-      replace: replace,
-      type: RouteTransitionType.fade,
-      duration: duration,
-    );
+  static Future<void> navigateWithFade(Widget page,
+      {bool replace = false}) async {
+    if (replace) {
+      await Navigator.pushReplacement(
+        navigatorKey.currentContext!,
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) => page,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(opacity: animation, child: child);
+          },
+        ),
+      );
+    } else {
+      await Navigator.push(
+        navigatorKey.currentContext!,
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) => page,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(opacity: animation, child: child);
+          },
+        ),
+      );
+    }
   }
 
   static Future<T?> navigateWithScale<T>(
@@ -125,4 +138,4 @@ class NavigationService {
   }
 
   static int get routeCount => _routeHistory.length;
-} 
+}

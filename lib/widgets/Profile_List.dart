@@ -23,6 +23,8 @@ class _ProfileListState extends State<ProfileList> {
   String _lastSearchTerm = '';
   bool _isLoading = false;
   bool _showSearch = false;
+  String _currentSortField = 'firstName';
+  bool _isAscending = true;
 
   final List<List<Color>> cardGradients = [
     [Colors.purple.shade500, Colors.blueAccent.shade100],
@@ -119,6 +121,243 @@ class _ProfileListState extends State<ProfileList> {
     }
   }
 
+  void _sortUsers() {
+    setState(() {
+      users.sort((a, b) {
+        if (_currentSortField == 'age') {
+          return _isAscending
+              ? a['age'].compareTo(b['age'])
+              : b['age'].compareTo(a['age']);
+        } else if (_currentSortField == 'city') {
+          return _isAscending
+              ? a['city'].toString().compareTo(b['city'].toString())
+              : b['city'].toString().compareTo(a['city'].toString());
+        } else {
+          return _isAscending
+              ? a['firstName'].toString().compareTo(b['firstName'].toString())
+              : b['firstName'].toString().compareTo(a['firstName'].toString());
+        }
+      });
+    });
+  }
+
+  void _showSortDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          elevation: 8,
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Colors.white,
+                  Colors.grey.shade100,
+                ],
+              ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.sort, color: Colors.blue.shade800),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Sort Profiles',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue.shade900,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Divider(height: 1),
+                _buildSortOption(
+                  icon: Icons.sort_by_alpha,
+                  title: 'Name',
+                  subtitle: 'Sort by first name',
+                  field: 'firstName',
+                  gradient: [Colors.purple.shade400, Colors.purple.shade100],
+                ),
+                _buildSortOption(
+                  icon: Icons.calendar_today,
+                  title: 'Age',
+                  subtitle: 'Sort by age',
+                  field: 'age',
+                  gradient: [Colors.orange.shade400, Colors.orange.shade100],
+                ),
+                _buildSortOption(
+                  icon: Icons.location_city,
+                  title: 'City',
+                  subtitle: 'Sort by city name',
+                  field: 'city',
+                  gradient: [Colors.green.shade400, Colors.green.shade100],
+                ),
+                const SizedBox(height: 8),
+                const Divider(height: 1),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          setState(() {
+                            _currentSortField = '';
+                            _isAscending = true;
+                          });
+                          _loadUsers();
+                          Navigator.pop(context);
+                        },
+                        child: Text(
+                          'Reset',
+                          style: TextStyle(
+                            color: Colors.grey.shade700,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildSortOption({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required String field,
+    required List<Color> gradient,
+  }) {
+    bool isSelected = _currentSortField == field;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: () {
+            setState(() {
+              if (_currentSortField == field) {
+                _isAscending = !_isAscending;
+              } else {
+                _currentSortField = field;
+                _isAscending = true;
+              }
+            });
+            _sortUsers();
+            Navigator.pop(context);
+          },
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              gradient: isSelected
+                  ? LinearGradient(
+                      colors: gradient,
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    )
+                  : null,
+              color: isSelected ? null : Colors.grey.shade50,
+              border: Border.all(
+                color: isSelected ? gradient[0] : Colors.grey.shade300,
+                width: isSelected ? 2 : 1,
+              ),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: isSelected ? Colors.white : Colors.grey.shade100,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: isSelected ? gradient[0] : Colors.grey.shade300,
+                      width: 1,
+                    ),
+                  ),
+                  child: Icon(
+                    icon,
+                    color: isSelected ? gradient[0] : Colors.grey.shade600,
+                    size: 22,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight:
+                              isSelected ? FontWeight.bold : FontWeight.w500,
+                          color:
+                              isSelected ? gradient[0] : Colors.grey.shade800,
+                        ),
+                      ),
+                      Text(
+                        subtitle,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (isSelected)
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: gradient[0], width: 1),
+                      boxShadow: [
+                        BoxShadow(
+                          color: gradient[0].withOpacity(0.2),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Icon(
+                      _isAscending ? Icons.arrow_upward : Icons.arrow_downward,
+                      color: gradient[0],
+                      size: 20,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   void dispose() {
     searchController.dispose();
@@ -136,7 +375,8 @@ class _ProfileListState extends State<ProfileList> {
           content: const Text('Are you sure you want to delete this user?'),
           actions: <Widget>[
             CupertinoDialogAction(
-              child: const Text('Cancel', style: TextStyle(color: Colors.green)),
+              child:
+                  const Text('Cancel', style: TextStyle(color: Colors.green)),
               onPressed: () {
                 Navigator.pop(context);
               },
@@ -169,6 +409,7 @@ class _ProfileListState extends State<ProfileList> {
             }
           });
         },
+        onSortTap: _showSortDialog,
       ),
       drawer: const CustomDrawer(),
       body: Container(
@@ -177,7 +418,8 @@ class _ProfileListState extends State<ProfileList> {
           children: [
             if (_showSearch)
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                 child: SearchBar(
                   controller: searchController,
                   hintText: 'Search by name, city, age, religion...',
@@ -203,252 +445,275 @@ class _ProfileListState extends State<ProfileList> {
               child: isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : users.isEmpty
-                  ? const Center(
-                child: Text(
-                  "No users found!",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              )
-                  : ListView.builder(
-                itemCount: users.length,
-                itemBuilder: (context, index) {
-                  final user = users[index];
-                  final gradientIndex = index % cardGradients.length;
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12.0, vertical: 6.0),
-                    child: GestureDetector(
-                      onTap: () async {
-                        if (_isLoading) return;
-
-                        setState(() => _isLoading = true);
-                        try {
-                          await NavigationService.navigateWithFade(
-                            DetailedUser(index: user['id']),
-                          );
-                          await _loadUsers(); // Refresh list after returning
-                        } catch (e) {
-                          if (mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Navigation error occurred'),
-                                behavior: SnackBarBehavior.floating,
-                              ),
-                            );
-                          }
-                        } finally {
-                          if (mounted) {
-                            setState(() => _isLoading = false);
-                          }
-                        }
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15),
-                          gradient: LinearGradient(
-                            colors: cardGradients[gradientIndex],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
+                      ? const Center(
+                          child: Text(
+                            "No users found!",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: cardGradients[gradientIndex][0]
-                                  .withOpacity(0.5),
-                              blurRadius: 12,
-                              offset: const Offset(0, 6),
-                            ),
-                            BoxShadow(
-                              color: cardGradients[gradientIndex][1]
-                                  .withOpacity(0.3),
-                              blurRadius: 8,
-                              offset: const Offset(-4, -4),
-                            ),
-                          ],
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  CircleAvatar(
-                                    radius: 20,
-                                    backgroundColor:
-                                    Colors.deepOrangeAccent,
-                                    child: Text(
-                                      user['firstName'][0].toUpperCase(),
-                                      style: const TextStyle(
-                                          fontSize: 24,
-                                          color: Colors.white),
+                        )
+                      : ListView.builder(
+                          itemCount: users.length,
+                          itemBuilder: (context, index) {
+                            final user = users[index];
+                            final gradientIndex = index % cardGradients.length;
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12.0, vertical: 6.0),
+                              child: GestureDetector(
+                                onTap: () async {
+                                  if (_isLoading) return;
+
+                                  setState(() => _isLoading = true);
+                                  try {
+                                    await NavigationService.navigateWithFade(
+                                      DetailedUser(index: user['id']),
+                                    );
+                                    await _loadUsers(); // Refresh list after returning
+                                  } catch (e) {
+                                    if (mounted) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          content:
+                                              Text('Navigation error occurred'),
+                                          behavior: SnackBarBehavior.floating,
+                                        ),
+                                      );
+                                    }
+                                  } finally {
+                                    if (mounted) {
+                                      setState(() => _isLoading = false);
+                                    }
+                                  }
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(15),
+                                    gradient: LinearGradient(
+                                      colors: cardGradients[gradientIndex],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
                                     ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: cardGradients[gradientIndex][0]
+                                            .withOpacity(0.5),
+                                        blurRadius: 12,
+                                        offset: const Offset(0, 6),
+                                      ),
+                                      BoxShadow(
+                                        color: cardGradients[gradientIndex][1]
+                                            .withOpacity(0.3),
+                                        blurRadius: 8,
+                                        offset: const Offset(-4, -4),
+                                      ),
+                                    ],
                                   ),
-                                  const SizedBox(width: 16),
-                                  Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(16),
                                     child: Column(
                                       crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        Text(
-                                          "${user['firstName']} ${user['lastName']}",
-                                          style: const TextStyle(
-                                              fontSize: 18,
-                                              overflow:
-                                              TextOverflow.ellipsis,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.white),
+                                        Row(
+                                          children: [
+                                            CircleAvatar(
+                                              radius: 20,
+                                              backgroundColor:
+                                                  Colors.deepOrangeAccent,
+                                              child: Text(
+                                                user['firstName'][0]
+                                                    .toUpperCase(),
+                                                style: const TextStyle(
+                                                    fontSize: 24,
+                                                    color: Colors.white),
+                                              ),
+                                            ),
+                                            const SizedBox(width: 16),
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    "${user['firstName']} ${user['lastName']}",
+                                                    style: const TextStyle(
+                                                        fontSize: 18,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: Colors.white),
+                                                  ),
+                                                  Text(
+                                                    "${user['age']} years",
+                                                    style: const TextStyle(
+                                                        color: Colors.white70),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            IconButton(
+                                              icon: Icon(
+                                                Icons.favorite,
+                                                color: user['isLiked'] == 1
+                                                    ? Colors.pink
+                                                    : Colors.white70,
+                                                size: 24,
+                                              ),
+                                              onPressed: () async {
+                                                if (!mounted) return;
+
+                                                try {
+                                                  int newValue =
+                                                      user['isLiked'] == 0
+                                                          ? 1
+                                                          : 0;
+                                                  await myUser
+                                                      .updateUserLikeStatus(
+                                                          user['id'], newValue);
+
+                                                  setState(() {
+                                                    user['isLiked'] = newValue;
+                                                  });
+
+                                                  if (mounted) {
+                                                    ScaffoldMessenger.of(
+                                                            context)
+                                                        .showSnackBar(
+                                                      SnackBar(
+                                                        content: Text(newValue ==
+                                                                1
+                                                            ? 'User liked successfully'
+                                                            : 'User unliked successfully'),
+                                                        duration:
+                                                            const Duration(
+                                                                milliseconds:
+                                                                    500),
+                                                      ),
+                                                    );
+                                                  }
+                                                } catch (e) {
+                                                  if (mounted) {
+                                                    ScaffoldMessenger.of(
+                                                            context)
+                                                        .showSnackBar(
+                                                      const SnackBar(
+                                                        content: Text(
+                                                            'Error updating like status'),
+                                                        duration: Duration(
+                                                            seconds: 2),
+                                                      ),
+                                                    );
+                                                  }
+                                                }
+                                              },
+                                            ),
+                                            PopupMenuButton(
+                                              icon: const Icon(Icons.more_vert,
+                                                  color: Colors.white),
+                                              itemBuilder: (context) => [
+                                                PopupMenuItem(
+                                                  child: Row(
+                                                    children: const [
+                                                      Icon(Icons.edit,
+                                                          color: Colors.blue),
+                                                      SizedBox(width: 8),
+                                                      Text('Edit'),
+                                                    ],
+                                                  ),
+                                                  onTap: () async {
+                                                    await Future.delayed(
+                                                        Duration.zero);
+                                                    if (mounted) {
+                                                      final result =
+                                                          await Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              AddEditForm(
+                                                            userData: user,
+                                                            index: index,
+                                                          ),
+                                                        ),
+                                                      );
+                                                      if (result == true) {
+                                                        _loadUsers();
+                                                      }
+                                                    }
+                                                  },
+                                                ),
+                                                PopupMenuItem(
+                                                  child: Row(
+                                                    children: const [
+                                                      Icon(Icons.delete,
+                                                          color: Colors.red),
+                                                      SizedBox(width: 8),
+                                                      Text('Delete'),
+                                                    ],
+                                                  ),
+                                                  onTap: () async {
+                                                    await Future.delayed(
+                                                        Duration.zero);
+                                                    if (mounted) {
+                                                      _showDeleteConfirmationDialog(
+                                                          index);
+                                                    }
+                                                  },
+                                                ),
+                                              ],
+                                            ),
+                                          ],
                                         ),
-                                        Text(
-                                          "${user['age']} years",
-                                          style: const TextStyle(
-                                              color: Colors.white70),
+                                        const Divider(
+                                            thickness: 1,
+                                            color: Colors.white54),
+                                        const SizedBox(height: 8),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            const Icon(Icons.location_on,
+                                                size: 16,
+                                                color: Colors.greenAccent),
+                                            const SizedBox(width: 4),
+                                            Text(user['city'],
+                                                style: const TextStyle(
+                                                    color: Colors.white)),
+                                            const SizedBox(width: 16),
+                                            const Icon(Icons.phone,
+                                                size: 16,
+                                                color: Colors.purpleAccent),
+                                            const SizedBox(width: 4),
+                                            Text(user['number'],
+                                                style: const TextStyle(
+                                                    color: Colors.white)),
+                                            const SizedBox(width: 16),
+                                            const Icon(Icons.email,
+                                                size: 16,
+                                                color: Colors.blueAccent),
+                                            const SizedBox(width: 4),
+                                            Flexible(
+                                              child: Text(
+                                                user['email'],
+                                                overflow: TextOverflow.ellipsis,
+                                                style: const TextStyle(
+                                                    color: Colors.white),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     ),
                                   ),
-                                  IconButton(
-                                    icon: Icon(
-                                      Icons.favorite,
-                                      color: user['isLiked'] == 1 ? Colors.pink : Colors.white70,
-                                      size: 24,
-                                    ),
-                                    onPressed: () async {
-                                      if (!mounted) return;
-
-                                      try {
-                                        int newValue = user['isLiked'] == 0 ? 1 : 0;
-                                        await myUser.updateUserLikeStatus(user['id'], newValue);
-
-                                        setState(() {
-                                          user['isLiked'] = newValue;
-                                        });
-
-                                        if (mounted) {
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            SnackBar(
-                                              content: Text(newValue == 1
-                                                  ? 'User liked successfully'
-                                                  : 'User unliked successfully'),
-                                              duration: const Duration(milliseconds: 500),
-                                            ),
-                                          );
-                                        }
-                                      } catch (e) {
-                                        if (mounted) {
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            const SnackBar(
-                                              content: Text('Error updating like status'),
-                                              duration: Duration(seconds: 2),
-                                            ),
-                                          );
-                                        }
-                                      }
-                                    },
-                                  ),
-                                  PopupMenuButton(
-                                    icon: const Icon(Icons.more_vert,
-                                        color: Colors.white),
-                                    itemBuilder: (context) => [
-                                      PopupMenuItem(
-                                        child: Row(
-                                          children: const [
-                                            Icon(Icons.edit,
-                                                color: Colors.blue),
-                                            SizedBox(width: 8),
-                                            Text('Edit'),
-                                          ],
-                                        ),
-                                        onTap: () async {
-                                          await Future.delayed(
-                                              Duration.zero);
-                                          if (mounted) {
-                                            final result =
-                                            await Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    AddEditForm(
-                                                      userData: user,
-                                                      index: index,
-                                                    ),
-                                              ),
-                                            );
-                                            if (result == true) {
-                                              _loadUsers();
-                                            }
-                                          }
-                                        },
-                                      ),
-                                      PopupMenuItem(
-                                        child: Row(
-                                          children: const [
-                                            Icon(Icons.delete,
-                                                color: Colors.red),
-                                            SizedBox(width: 8),
-                                            Text('Delete'),
-                                          ],
-                                        ),
-                                        onTap: () async {
-                                          await Future.delayed(
-                                              Duration.zero);
-                                          if (mounted) {
-                                            _showDeleteConfirmationDialog(
-                                                index);
-                                          }
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                                ),
                               ),
-                              const Divider(
-                                  thickness: 1, color: Colors.white54),
-                              const SizedBox(height: 8),
-                              Row(
-                                mainAxisAlignment:
-                                MainAxisAlignment.center,
-                                children: [
-                                  const Icon(Icons.location_on,
-                                      size: 16,
-                                      color: Colors.greenAccent),
-                                  const SizedBox(width: 4),
-                                  Text(user['city'],
-                                      style: const TextStyle(
-                                          color: Colors.white)),
-                                  const SizedBox(width: 16),
-                                  const Icon(Icons.phone,
-                                      size: 16,
-                                      color: Colors.purpleAccent),
-                                  const SizedBox(width: 4),
-                                  Text(user['number'],
-                                      style: const TextStyle(
-                                          color: Colors.white)),
-                                  const SizedBox(width: 16),
-                                  const Icon(Icons.email,
-                                      size: 16,
-                                      color: Colors.blueAccent),
-                                  const SizedBox(width: 4),
-                                  Flexible(
-                                    child: Text(
-                                      user['email'],
-                                      overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
-                                          color: Colors.white),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
+                            );
+                          },
                         ),
-                      ),
-                    ),
-                  );
-                },
-              ),
             ),
           ],
         ),
